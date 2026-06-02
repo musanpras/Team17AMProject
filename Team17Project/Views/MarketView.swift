@@ -16,6 +16,7 @@ struct MarketView: View {
 
     @State private var showingAdd = false
     @State private var selectedFilter: EnergyFilter = .draining
+    @State private var editingTask: TaskItem?
 
     private let maxSelectedTasks = 4
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 0), count: 4)
@@ -76,14 +77,18 @@ struct MarketView: View {
             Color.black.opacity(0.18)
                 .ignoresSafeArea()
                 .onTapGesture {
+                    editingTask = nil
                     showingAdd = false
                 }
 
             AddTaskView(
+                task: editingTask,
                 onSave: {
+                    editingTask = nil
                     showingAdd = false
                 },
                 onCancel: {
+                    editingTask = nil
                     showingAdd = false
                 }
             )
@@ -173,6 +178,12 @@ struct MarketView: View {
                         ActivityCell(task: task)
                     }
                     .buttonStyle(.plain)
+                    .simultaneousGesture(
+                        LongPressGesture(minimumDuration: 1.0).onEnded { _ in
+                            editingTask = task
+                            showingAdd = true
+                        }
+                    )
                 }
             }
             .clipShape(RoundedRectangle(cornerRadius: 12))
@@ -185,6 +196,7 @@ struct MarketView: View {
 
     private var addTaskButton: some View {
         Button {
+            editingTask = nil
             showingAdd = true
         } label: {
             VStack {
@@ -222,6 +234,12 @@ struct MarketView: View {
                         .buttonStyle(.plain)
                         .offset(x: -4, y: 4)
                     }
+                    .simultaneousGesture(
+                        LongPressGesture(minimumDuration: 1.0).onEnded { _ in
+                            editingTask = task
+                            showingAdd = true
+                        }
+                    )
                 }
                 
                 ForEach(0..<emptySelectedSlotCount, id: \.self) { _ in
@@ -263,9 +281,8 @@ struct MarketView: View {
         let pendingObjects = Set(pendingSelectedTasks.prefix(maxSelectedTasks).map { ObjectIdentifier($0) })
 
         for task in tasks {
-            let isCommitted = pendingObjects.contains(ObjectIdentifier(task))
-            task.isSelected = isCommitted
-            task.isPendingSelected = isCommitted
+            task.isSelected = pendingObjects.contains(ObjectIdentifier(task))
+            task.isPendingSelected = false
         }
 
         try? context.save()

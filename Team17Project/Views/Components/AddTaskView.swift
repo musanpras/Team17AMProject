@@ -13,13 +13,28 @@ struct AddTaskView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var context
 
+    let task: TaskItem?
+    var onSave: (() -> Void)?
+    var onCancel: (() -> Void)?
+
     @State private var title = ""
     @State private var energy = ""
     @State private var isDraining = true
     @State private var icon = "☺️"
 
-    var onSave: (() -> Void)?
-    var onCancel: (() -> Void)?
+    init(
+        task: TaskItem? = nil,
+        onSave: (() -> Void)? = nil,
+        onCancel: (() -> Void)? = nil
+    ) {
+        self.task = task
+        self.onSave = onSave
+        self.onCancel = onCancel
+    }
+
+    private var isEditing: Bool {
+        task != nil
+    }
 
     private var isFormValid: Bool {
         !title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
@@ -40,10 +55,9 @@ struct AddTaskView: View {
                     RoundedRectangle(cornerRadius: 24)
                         .stroke(.black, lineWidth: 2)
                 )
-                
 
             VStack(spacing: 14) {
-                Text("custom task")
+                Text(isEditing ? "edit task" : "custom task")
                     .font(.system(size: 28, weight: .bold))
                     .foregroundStyle(.black)
                     .padding(.top, 28)
@@ -66,9 +80,27 @@ struct AddTaskView: View {
                 Spacer()
             }
             .padding(.horizontal, -16)
-            .offset(y: -18)
+            .offset(x: -10, y: -18)
+
+            if isEditing {
+                HStack {
+                    Spacer()
+
+                    circleButton(
+                        systemImage: "trash",
+                        foregroundColor: .white,
+                        backgroundColor: .red,
+                        action: deleteTask
+                    )
+                }
+                .padding(.horizontal, -16)
+                .offset(x: 10, y: -18)
+            }
         }
         .frame(width: 294, height: 293)
+        .onAppear {
+            loadTaskIfNeeded()
+        }
     }
 
     private var inputPanel: some View {
@@ -142,7 +174,7 @@ struct AddTaskView: View {
         Button {
             saveTask()
         } label: {
-            Text("add to marketplace?")
+            Text(isEditing ? "confirm changes?" : "add to marketplace?")
                 .font(.system(size: 16))
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
@@ -188,26 +220,49 @@ struct AddTaskView: View {
         return String(emojiCharacters.prefix(1))
     }
 
+    private func loadTaskIfNeeded() {
+        guard let task else { return }
+
+        title = task.title
+        energy = "\(task.energyImpact)"
+        isDraining = task.isDraining
+        icon = task.icon
+    }
+
     private func close() {
         onCancel?()
         dismiss()
     }
 
-    func saveTask() {
+    private func deleteTask() {
+        guard let task else { return }
 
+        context.delete(task)
+        try? context.save()
+        onSave?()
+        dismiss()
+    }
+
+    private func saveTask() {
         guard let energyImpact = Int(energy) else { return }
 
-        let task = TaskItem(
-            title: title.trimmingCharacters(in: .whitespacesAndNewlines),
-            energyImpact: energyImpact,
-            isDraining: isDraining,
-            icon: icon.trimmingCharacters(in: .whitespacesAndNewlines)
-        )
+        if let task {
+            task.title = title.trimmingCharacters(in: .whitespacesAndNewlines)
+            task.energyImpact = energyImpact
+            task.isDraining = isDraining
+            task.icon = icon.trimmingCharacters(in: .whitespacesAndNewlines)
+        } else {
+            let task = TaskItem(
+                title: title.trimmingCharacters(in: .whitespacesAndNewlines),
+                energyImpact: energyImpact,
+                isDraining: isDraining,
+                icon: icon.trimmingCharacters(in: .whitespacesAndNewlines)
+            )
 
-        context.insert(task)
+            context.insert(task)
+        }
 
         try? context.save()
-
         onSave?()
         dismiss()
     }
