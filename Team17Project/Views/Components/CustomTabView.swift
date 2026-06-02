@@ -61,7 +61,7 @@ struct CustomTabView: View {
                 }
             }
         }
-        .frame(width: 190, height: 50)
+        .frame(width: 200, height: 50)
     }
 
     private func tabButton(
@@ -87,7 +87,7 @@ struct CustomTabView: View {
             .foregroundColor(
                 selectedTab == tab
                 ? Color.blue
-                : Color.gray
+                : Color.black
             )
             .frame(maxWidth: .infinity)
             .frame(height: 80)

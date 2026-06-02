@@ -31,10 +31,31 @@ struct HomeView: View {
         return Double(dailyState.currentEnergy) / Double(dailyState.maxEnergy)
     }
     
+    private var mascotEnergy: String {
+        switch energyValue {
+        case ..<0.25: return "tired"
+        case 0.25..<0.5: return "idle"
+        case 0.5..<0.75: return "energized"
+        default: return "hyped"
+        }
+    }
+    
+    private var energyColor: Color {
+        switch energyValue {
+        case ..<0.25: return .red
+        case 0.25..<0.5: return .orange
+        case 0.5..<0.75: return .yellow
+        default: return .green
+        }
+    }
+    
     var body: some View {
         
         ZStack {
-            HomeGridPaperBackground()
+            Image("backgroundImage")
+                .resizable()
+                .padding(.top, 10)
+                .ignoresSafeArea()
             
             ScrollView {
                 VStack(spacing: 20) {
@@ -42,7 +63,6 @@ struct HomeView: View {
                     mascotSection
                     energyBar
                     selectedTaskGrid
-                    editInventoryLink
                 }
                 .padding(.horizontal, 30)
                 .padding(.top, 36)
@@ -120,31 +140,45 @@ struct HomeView: View {
     private var mascotSection: some View {
         ZStack(alignment: .leading) {
             
-            Image("idle")
+            Image(mascotEnergy)
                 .resizable()
                 .scaledToFit()
                 .frame(width: 170, height: 310)
                 .frame(maxWidth: .infinity)
             
-            SpeechBubble()
-                .fill(.white)
-                .shadow(color: .black, radius: 0, x: 0, y: 4)
-                .overlay(
-                    SpeechBubble()
-                        .stroke(.black, lineWidth: 1)
-                )
-                .frame(width: 134, height: 54)
-                .overlay(
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("good job on doing")
-                            .font(.system(size: 12))
-                        
-                        Text("assignments today")
-                            .font(.system(size: 13, weight: .bold))
-                    }
-                        .foregroundStyle(.black)
-                        .padding(.horizontal, 12)
-                )
+            VStack {
+                Spacer()
+                    .frame(height: 48)
+                SpeechBubble()
+                    .fill(.white)
+                    .shadow(color: .black, radius: 0, x: 0, y: 4)
+                    .overlay(
+                        SpeechBubble()
+                            .stroke(.black, lineWidth: 1)
+                    )
+                    .overlay(
+                        VStack(alignment: .leading, spacing: 4) {
+                            HStack {
+                                Text("good job on doing")
+                                    .font(.system(size: 12))
+                                    .fixedSize(horizontal: false, vertical: true)
+                                Spacer()
+                                    .frame(width: 18)
+                            }
+                            HStack {
+                                Text("assignments today")
+                                    .font(.system(size: 13, weight: .bold))
+                                    .fixedSize(horizontal: false, vertical: true)
+                                Spacer()
+                                    .frame(width: 18)
+                            }
+                        }
+                            .foregroundStyle(.black)
+                            .padding(0)
+                    )
+                    .frame(width: 134, height: 54)
+                Spacer()
+            }
         }
         .frame(height: 330)
     }
@@ -169,7 +203,7 @@ struct HomeView: View {
                         .fill(.black)
                         .offset(y: 3)
                     Capsule()
-                        .fill(Color(red: 0.2, green: 0.82, blue: 0.34))
+                        .fill(energyColor)
                         .frame(width: proxy.size.width * min(max(energyValue, 0), 1))
                 }
             }
@@ -218,14 +252,6 @@ struct HomeView: View {
     
     private var emptySelectedSlotCount: Int {
         max(0, maxSelectedTasks - selectedTasks.count)
-    }
-    
-    private var editInventoryLink: some View {
-        Text("edit inventory?")
-            .font(.system(size: 14))
-            .underline()
-            .foregroundStyle(.black)
-            .padding(.top, 10)
     }
     
     func complete(_ task: TaskItem) {

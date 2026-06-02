@@ -17,6 +17,7 @@ struct MarketView: View {
     @State private var showingAdd = false
     @State private var selectedFilter: EnergyFilter = .draining
     
+    @State private var editingTask: TaskItem?
     private let maxSelectedTasks = 4
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 0), count: 4)
     
@@ -66,6 +67,7 @@ struct MarketView: View {
             .toolbar(.hidden, for: .navigationBar)
             .onAppear {
                 createStateIfNeeded()
+                seedDefaultTasksIfNeeded()
                 syncPendingSelectionFromCommittedSelection()
             }
         }
@@ -76,14 +78,18 @@ struct MarketView: View {
             Color.black.opacity(0.18)
                 .ignoresSafeArea()
                 .onTapGesture {
+                    editingTask = nil
                     showingAdd = false
                 }
             
             AddTaskView(
+                task: editingTask,
                 onSave: {
+                    editingTask = nil
                     showingAdd = false
                 },
                 onCancel: {
+                    editingTask = nil
                     showingAdd = false
                 }
             )
@@ -164,26 +170,24 @@ struct MarketView: View {
                 .shadow(color: .black, radius: 0, x: 0, y: 6)
             
             ScrollView{
-                
-                //                give the condition if 4/8/16
                 LazyVGrid(columns: columns, spacing: 0) {
                     addTaskButton
                     
                     ForEach(filteredTasks) { task in
-                        Button {
-                            toggleSelection(for: task)
-                        } label: {
-                            ActivityCell(task: task)
-                        }
-                        .buttonStyle(.plain)
-                    }
+                        ActivityCell(task: task)
+                            .onLongPressGesture(minimumDuration: 0.8) {
+                                editingTask = task
+                                showingAdd = true
+                            }
+                            .onTapGesture {
+                                toggleSelection(for: task)
+                            }                    }
                     
                     ForEach(0..<emptyActivitySlotCount, id: \.self) { _ in
                         Color.clear
                             .frame(maxWidth: .infinity, minHeight: 94)
                             .border(.black.opacity(0.15), width: 0.5)
                     }
-                    
                 }
                 
                 
@@ -205,6 +209,7 @@ struct MarketView: View {
     
     private var addTaskButton: some View {
         Button {
+            editingTask = nil
             showingAdd = true
         } label: {
             VStack {
@@ -242,6 +247,12 @@ struct MarketView: View {
                         .buttonStyle(.plain)
                         .offset(x: -4, y: 4)
                     }
+                    .simultaneousGesture(
+                        LongPressGesture(minimumDuration: 1.0).onEnded { _ in
+                            editingTask = task
+                            showingAdd = true
+                        }
+                    )
                 }
                 
                 ForEach(0..<emptySelectedSlotCount, id: \.self) { _ in
@@ -283,9 +294,8 @@ struct MarketView: View {
         let pendingObjects = Set(pendingSelectedTasks.prefix(maxSelectedTasks).map { ObjectIdentifier($0) })
         
         for task in tasks {
-            let isCommitted = pendingObjects.contains(ObjectIdentifier(task))
-            task.isSelected = isCommitted
-            task.isPendingSelected = isCommitted
+            task.isSelected = pendingObjects.contains(ObjectIdentifier(task))
+            task.isPendingSelected = false
         }
         
         try? context.save()
@@ -304,6 +314,16 @@ struct MarketView: View {
     private func syncPendingSelectionFromCommittedSelection() {
         for task in tasks {
             task.isPendingSelected = task.isSelected
+        }
+        
+        try? context.save()
+    }
+    
+    private func seedDefaultTasksIfNeeded() {
+        guard tasks.isEmpty else { return }
+        
+        for task in TaskItem.defaultTasks {
+            context.insert(task)
         }
         
         try? context.save()
