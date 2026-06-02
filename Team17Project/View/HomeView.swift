@@ -11,6 +11,7 @@ struct HomeView: View {
     
     @Environment(\.modelContext) private var context
     
+    @State private var activeTask: TaskItem? = nil
     @Query private var tasks: [TaskItem]
     @Query private var states: [DailyState]
     
@@ -57,7 +58,8 @@ struct HomeView: View {
         ZStack(alignment: .leading) {
             
             VStack(spacing: 8) {
-                Text("pick a task.")
+
+                Text(activeTask != nil ? activeTask!.title : "pick a task.")
                     .font(.system(size: 32, weight: .bold))
                     .foregroundStyle(.black)
                 
@@ -67,65 +69,62 @@ struct HomeView: View {
                     .foregroundStyle(.gray)
             }
             .frame(maxWidth: .infinity)
-            
-            HStack{
+            if hasActiveTask{
                 
+                HStack{
+                    
                 
-//                Button {
-//                } label: {
-//                    Image(systemName: "info")
-//                        .font(.system(size: 24, weight: .bold))
-//                        .foregroundStyle(.black)
-//                        .frame(width: 54, height: 54)
-//                        .background(Circle().fill(.white).shadow(color: .black, radius: 0, x: 0, y: 4))
-//                        .overlay(Circle().stroke(.black, lineWidth: 1))
-//                    
-//                }
-//                .buttonStyle(.plain)
-                Button {
-                } label: {
-                    Image(systemName: "trash")
-                        .font(.system(size: 24, weight: .bold))
-                        .foregroundStyle(.white)
-                        .frame(width: 54, height: 54)
-                        .background(Circle().fill(.red).shadow(color: .black, radius: 0, x: 0, y: 4))
-                        .overlay(Circle().stroke(.black, lineWidth: 1))
+                    Button {
+                        if let task = activeTask {
+                            task.isSelected = false
+                            try? context.save()
+                            activeTask = nil
+                        }
+                    } label: {
+                        Image(systemName: "trash")
+                            .font(.system(size: 24, weight: .bold))
+                            .foregroundStyle(.white)
+                            .frame(width: 54, height: 54)
+                            .background(Circle().fill(.red).shadow(color: .black, radius: 0, x: 0, y: 4))
+                            .overlay(Circle().stroke(.black, lineWidth: 1))
+                        
+                    }
+                    .buttonStyle(.plain)
+                    
+                    Spacer()
+                    
+                    
+                    Button {
+                        if let task = activeTask {
+                            complete(task)
+                            task.isSelected = false
+                            try? context.save()
+                            activeTask = nil
+                        }
+                    } label: {
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 24, weight: .bold))
+                            .foregroundStyle(.white)
+                            .frame(width: 54, height: 54)
+                            .background(Circle().fill(.blue).shadow(color: .black, radius: 0, x: 0, y: 4))
+                            .overlay(Circle().stroke(.black, lineWidth: 1))
+                        
+                    }
+                    .buttonStyle(.plain)
                     
                 }
-                .buttonStyle(.plain)
-                
-                Spacer()
-                
-                
-                Button {
-                } label: {
-                    Image(systemName: "checkmark")
-                        .font(.system(size: 24, weight: .bold))
-                        .foregroundStyle(.white)
-                        .frame(width: 54, height: 54)
-                        .background(Circle().fill(.blue).shadow(color: .black, radius: 0, x: 0, y: 4))
-                        .overlay(Circle().stroke(.black, lineWidth: 1))
-                    
-                }
-                .buttonStyle(.plain)
-                
             }
         }
     }
     
     private var mascotSection: some View {
         ZStack(alignment: .leading) {
-            StickMascotShape()
-                .stroke(.black.opacity(0.75), style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
+            
+            Image("idle")
+                .resizable()
+                .scaledToFit()
                 .frame(width: 170, height: 310)
                 .frame(maxWidth: .infinity)
-            
-//            Image("idle")
-//                .resizable()
-//                .scaledToFit()
-//                .frame(width: 170, height: 310)
-//                .frame(maxWidth: .infinity)
-//
             
             SpeechBubble()
                 .fill(.white)
@@ -136,7 +135,7 @@ struct HomeView: View {
                 )
                 .frame(width: 134, height: 54)
                 .overlay(
-                    VStack(alignment: .leading, spacing: 2) {
+                    VStack(alignment: .leading, spacing: 4) {
                         Text("good job on doing")
                             .font(.system(size: 12))
                         
@@ -150,109 +149,114 @@ struct HomeView: View {
         .frame(height: 330)
     }
     
-        private var energyBar: some View {
-            HStack(spacing: 0) {
-                Image(systemName: "bolt.fill")
-                    .font(.system(size: 28, weight: .bold))
-                    .foregroundStyle(.black)
-                    .frame(width: 42, height: 42)
-                    .background(Circle().fill(.white))
-                    .overlay(Circle().stroke(.black, lineWidth: 2))
-                    .background(Circle().fill(.white).shadow(color: .black, radius: 0, x: 0, y: 4))
-                    .zIndex(1)
-                
-                GeometryReader { proxy in
-                    ZStack(alignment: .leading) {
-                        Capsule()
-                            .fill(.black)
-                        
-                        Capsule()
-                            .fill(.black)
-                            .offset(y: 3)
-                        Capsule()
-                            .fill(Color(red: 0.2, green: 0.82, blue: 0.34))
-                            .frame(width: proxy.size.width * min(max(energyValue, 0), 1))
-                    }
-                }
-                .frame(width: 160, height: 32)
-                .overlay(Capsule().stroke(.black, lineWidth: 1))
-                .offset(x: -20)
-            }
-            .frame(maxWidth: .infinity)
-        }
-        
-        private var selectedTaskGrid: some View {
-            ZStack {
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(Color(.systemBackground))
-                    .shadow(color: .black, radius: 0, x: 0, y: 8)
-                
-                LazyVGrid(columns: columns, spacing: 0) {
-                    ForEach(selectedTasks) { task in
-                        Button {
-                            complete(task)
-                        } label: {
-                            ActivityCell(task: task)
-                        }
-                        .buttonStyle(.plain)
-                    }
-                    
-                    ForEach(0..<emptySelectedSlotCount, id: \.self) { _ in
-                        Color.white.opacity(0.35)
-                            .frame(maxWidth: .infinity, minHeight: 94)
-                            .border(.black, width: 0.5)
-                    }
-                }
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(.black, lineWidth: 1)
-                )
-                .padding(.top, 6)
-            }
-        }
-        
-        private var emptySelectedSlotCount: Int {
-            max(0, maxSelectedTasks - selectedTasks.count)
-        }
-        
-        private var editInventoryLink: some View {
-            Text("edit inventory?")
-                .font(.system(size: 14))
-                .underline()
+    private var energyBar: some View {
+        HStack(spacing: 0) {
+            Image(systemName: "bolt.fill")
+                .font(.system(size: 28, weight: .bold))
                 .foregroundStyle(.black)
-                .padding(.top, 10)
+                .frame(width: 42, height: 42)
+                .background(Circle().fill(.white))
+                .overlay(Circle().stroke(.black, lineWidth: 2))
+                .background(Circle().fill(.white).shadow(color: .black, radius: 0, x: 0, y: 4))
+                .zIndex(1)
+            
+            GeometryReader { proxy in
+                ZStack(alignment: .leading) {
+                    Capsule()
+                        .fill(.black)
+                    
+                    Capsule()
+                        .fill(.black)
+                        .offset(y: 3)
+                    Capsule()
+                        .fill(Color(red: 0.2, green: 0.82, blue: 0.34))
+                        .frame(width: proxy.size.width * min(max(energyValue, 0), 1))
+                }
+            }
+            .frame(width: 160, height: 32)
+            .overlay(Capsule().stroke(.black, lineWidth: 1))
+            .offset(x: -20)
+        }
+        .frame(maxWidth: .infinity)
+    }
+    
+    private var selectedTaskGrid: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color(.systemBackground))
+                .shadow(color: .black, radius: 0, x: 0, y: 8)
+            
+            LazyVGrid(columns: columns, spacing: 0) {
+                ForEach(selectedTasks) { task in
+                    Button {
+//                        complete(task)
+                        activeTask = (activeTask?.id == task.id) ? nil : task
+                    } label: {
+                        ActivityCell(task: task)
+                    }
+                    .buttonStyle(.plain)
+                }
+                
+                ForEach(0..<emptySelectedSlotCount, id: \.self) { _ in
+                    Color.white.opacity(0.35)
+                        .frame(maxWidth: .infinity, minHeight: 94)
+                        .border(.black, width: 0.5)
+                }
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(.black, lineWidth: 1)
+            )
+            .padding(.top, 6)
+        }
+    }
+    
+    private var hasActiveTask: Bool {
+        activeTask != nil
+    }
+    
+    private var emptySelectedSlotCount: Int {
+        max(0, maxSelectedTasks - selectedTasks.count)
+    }
+    
+    private var editInventoryLink: some View {
+        Text("edit inventory?")
+            .font(.system(size: 14))
+            .underline()
+            .foregroundStyle(.black)
+            .padding(.top, 10)
+    }
+    
+    func complete(_ task: TaskItem) {
+        
+        guard let state = dailyState else { return }
+        
+        if task.isDraining {
+            state.currentEnergy -= task.energyImpact
+        } else {
+            state.currentEnergy += task.energyImpact
         }
         
-        func complete(_ task: TaskItem) {
+        state.currentEnergy = max(
+            0,
+            min(state.currentEnergy, state.maxEnergy)
+        )
+        
+        try? context.save()
+    }
+    
+    func createStateIfNeeded() {
+        
+        if states.isEmpty {
             
-            guard let state = dailyState else { return }
-            
-            if task.isDraining {
-                state.currentEnergy -= task.energyImpact
-            } else {
-                state.currentEnergy += task.energyImpact
-            }
-            
-            state.currentEnergy = max(
-                0,
-                min(state.currentEnergy, state.maxEnergy)
-            )
+            let state = DailyState()
+            context.insert(state)
             
             try? context.save()
         }
-        
-        func createStateIfNeeded() {
-            
-            if states.isEmpty {
-                
-                let state = DailyState()
-                context.insert(state)
-                
-                try? context.save()
-            }
-        }
     }
+}
 
 private struct HomeGridPaperBackground: View {
     var body: some View {
@@ -286,62 +290,6 @@ private struct HomeGridPaperBackground: View {
     }
 }
 
-private struct StickMascotShape: Shape {
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        
-        let centerX = rect.midX
-        let headRadius = rect.width * 0.16
-        let headCenter = CGPoint(x: centerX, y: rect.minY + headRadius + 8)
-        path.addEllipse(in: CGRect(
-            x: headCenter.x - headRadius,
-            y: headCenter.y - headRadius,
-            width: headRadius * 2,
-            height: headRadius * 2
-        ))
-        
-        let neck = CGPoint(x: centerX, y: headCenter.y + headRadius)
-        let hip = CGPoint(x: centerX + 2, y: rect.minY + rect.height * 0.53)
-        path.move(to: neck)
-        path.addLine(to: hip)
-        
-        path.move(to: CGPoint(x: centerX - 4, y: rect.minY + rect.height * 0.25))
-        path.addLine(to: CGPoint(x: centerX - 24, y: rect.minY + rect.height * 0.42))
-        path.addLine(to: CGPoint(x: centerX - 45, y: rect.minY + rect.height * 0.28))
-        path.addLine(to: CGPoint(x: centerX - 66, y: rect.minY + rect.height * 0.26))
-        path.addQuadCurve(
-            to: CGPoint(x: centerX - 58, y: rect.minY + rect.height * 0.29),
-            control: CGPoint(x: centerX - 66, y: rect.minY + rect.height * 0.31)
-        )
-        
-        path.move(to: CGPoint(x: centerX + 4, y: rect.minY + rect.height * 0.25))
-        path.addLine(to: CGPoint(x: centerX + 24, y: rect.minY + rect.height * 0.46))
-        path.addLine(to: CGPoint(x: centerX + 52, y: rect.minY + rect.height * 0.27))
-        path.addLine(to: CGPoint(x: centerX + 73, y: rect.minY + rect.height * 0.28))
-        path.addQuadCurve(
-            to: CGPoint(x: centerX + 62, y: rect.minY + rect.height * 0.26),
-            control: CGPoint(x: centerX + 76, y: rect.minY + rect.height * 0.23)
-        )
-        
-        path.move(to: hip)
-        path.addLine(to: CGPoint(x: centerX - 24, y: rect.minY + rect.height * 0.72))
-        path.addLine(to: CGPoint(x: centerX - 26, y: rect.minY + rect.height * 0.95))
-        path.addQuadCurve(
-            to: CGPoint(x: centerX - 44, y: rect.minY + rect.height * 0.98),
-            control: CGPoint(x: centerX - 46, y: rect.minY + rect.height * 0.96)
-        )
-        
-        path.move(to: hip)
-        path.addLine(to: CGPoint(x: centerX + 22, y: rect.minY + rect.height * 0.72))
-        path.addLine(to: CGPoint(x: centerX + 30, y: rect.minY + rect.height * 0.94))
-        path.addQuadCurve(
-            to: CGPoint(x: centerX + 52, y: rect.minY + rect.height * 0.98),
-            control: CGPoint(x: centerX + 52, y: rect.minY + rect.height * 0.94)
-        )
-        
-        return path
-    }
-}
 
 private struct SpeechBubble: Shape {
     func path(in rect: CGRect) -> Path {
