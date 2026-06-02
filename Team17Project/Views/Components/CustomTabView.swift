@@ -9,12 +9,8 @@ import SwiftUI
 
 struct CustomTabView: View {
 
-    @State private var selectedTab: Tab = .market
+    @Binding var selectedTab: Tab
     
-    enum Tab {
-        case market
-        case home
-    }
 
     var body: some View {
 
@@ -23,15 +19,14 @@ struct CustomTabView: View {
             // Bottom dark shadow layer
             RoundedRectangle(cornerRadius: 40)
                 .fill(Color.black.opacity(0.8))
-                .frame(height: 80)
-                .offset(y: 10)
+                .frame(height: 68)
 
             // Main tab bar
             ZStack {
 
                 RoundedRectangle(cornerRadius: 40)
                     .fill(Color.white)
-                    .frame(height: 80)
+                    .frame(height: 68)
 
                 // Selected tab background
                 HStack {
@@ -41,7 +36,7 @@ struct CustomTabView: View {
 
                     RoundedRectangle(cornerRadius: 35)
                         .fill(Color.gray.opacity(0.12))
-                        .frame(width: 170, height: 68)
+                        .frame(width: 90, height: 60)
 
                     if selectedTab == .home {
                         Spacer()
@@ -66,7 +61,7 @@ struct CustomTabView: View {
                 }
             }
         }
-        .padding(.horizontal, 24)
+        .frame(width: 190, height: 50)
     }
 
     private func tabButton(
@@ -84,10 +79,10 @@ struct CustomTabView: View {
             VStack(spacing: 6) {
 
                 Image(systemName: image)
-                    .font(.system(size: 24))
+                    .font(.system(size: 20))
 
                 Text(title)
-                    .font(.system(size: 18, weight: .medium))
+                    .font(.system(size: 12, weight: .medium))
             }
             .foregroundColor(
                 selectedTab == tab
@@ -101,6 +96,6 @@ struct CustomTabView: View {
 }
 
 #Preview {
-    CustomTabView()
+    CustomTabView(selectedTab: .constant(.home))
         .background(Color(.systemGray6))
 }
