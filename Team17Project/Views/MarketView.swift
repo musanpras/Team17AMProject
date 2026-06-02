@@ -9,44 +9,44 @@ import SwiftUI
 import SwiftData
 
 struct MarketView: View {
-
+    
     @Environment(\.modelContext) private var context
     @Query private var tasks: [TaskItem]
     @Query private var states: [DailyState]
-
+    
     @State private var showingAdd = false
     @State private var selectedFilter: EnergyFilter = .draining
+    
     @State private var editingTask: TaskItem?
-
     private let maxSelectedTasks = 4
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 0), count: 4)
-
+    
     private var dailyState: DailyState? {
         states.first
     }
-
+    
     private var energyValue: Double {
         guard let dailyState, dailyState.maxEnergy > 0 else { return 0 }
         return Double(dailyState.currentEnergy) / Double(dailyState.maxEnergy)
     }
-
+    
     private var pendingSelectedTasks: [TaskItem] {
         tasks.filter { $0.isPendingSelected }
     }
-
+    
     private var filteredTasks: [TaskItem] {
         tasks.filter { task in
             selectedFilter == .draining ? task.isDraining : !task.isDraining
         }
     }
-
+    
     var body: some View {
-
+        
         NavigationStack {
-
+            
             ZStack {
                 GridPaperBackground()
-
+                
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
                         header
@@ -59,7 +59,7 @@ struct MarketView: View {
                     .padding(.top, 18)
                     .padding(.bottom, 100)
                 }
-
+                
                 if showingAdd {
                     addTaskPopup
                 }
@@ -67,11 +67,12 @@ struct MarketView: View {
             .toolbar(.hidden, for: .navigationBar)
             .onAppear {
                 createStateIfNeeded()
+                seedDefaultTasksIfNeeded()
                 syncPendingSelectionFromCommittedSelection()
             }
         }
     }
-
+    
     private var addTaskPopup: some View {
         ZStack {
             Color.black.opacity(0.18)
@@ -80,7 +81,7 @@ struct MarketView: View {
                     editingTask = nil
                     showingAdd = false
                 }
-
+            
             AddTaskView(
                 task: editingTask,
                 onSave: {
@@ -98,26 +99,26 @@ struct MarketView: View {
         .transition(.opacity.combined(with: .scale(scale: 0.96)))
         .zIndex(10)
     }
-
+    
     private var header: some View {
         HStack(alignment: .center) {
             Text("market")
                 .font(.system(size: 30, weight: .bold))
                 .foregroundStyle(.black)
-
+            
             Spacer()
-
+            
             HStack(spacing: 2) {
                 Image(systemName: "bolt.fill")
                     .font(.system(size: 20, weight: .bold))
                     .foregroundStyle(.black)
                     .frame(width: 30, height: 30)
-                    
+                
                     .background(Circle().fill(.white).shadow(color: .black, radius: 0, x: 0, y: 2))
                     .overlay(Circle().stroke(.black, lineWidth: 2))
                     .zIndex(1)
                     .offset(x: 20)
-
+                
                 GeometryReader { proxy in
                     ZStack(alignment: .leading) {
                         Capsule()
@@ -125,7 +126,7 @@ struct MarketView: View {
                         Capsule()
                             .fill(.black)
                             .offset(y: 2)
-
+                        
                         Capsule()
                             .fill(.yellow)
                             .frame(width: proxy.size.width * min(max(energyValue, 0), 1))
@@ -133,14 +134,14 @@ struct MarketView: View {
                 }
                 .frame(width: 100, height: 20)
                 .overlay(Capsule().stroke(.black, lineWidth: 1))
-
+                
                 Text("\(dailyState?.currentEnergy ?? 0)")
                     .font(.system(size: 14, weight: .medium))
                     .foregroundStyle(.black)
             }
         }
     }
-
+    
     private var filterPicker: some View {
         Picker("Energy type", selection: $selectedFilter) {
             ForEach(EnergyFilter.allCases, id: \.self) { filter in
@@ -161,39 +162,51 @@ struct MarketView: View {
                 .stroke(.black, lineWidth: 1)
         )
     }
-
+    
     private var activityGrid: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 16)
-                                .fill(Color(.systemBackground))
-                                .shadow(color: .black, radius: 0, x: 0, y: 6)
+                .fill(Color(.systemBackground))
+                .shadow(color: .black, radius: 0, x: 0, y: 6)
             
-            LazyVGrid(columns: columns, spacing: 0) {
-                addTaskButton
-                
-                ForEach(filteredTasks) { task in
-                    Button {
-                        toggleSelection(for: task)
-                    } label: {
+            ScrollView{
+                LazyVGrid(columns: columns, spacing: 0) {
+                    addTaskButton
+                    
+                    ForEach(filteredTasks) { task in
                         ActivityCell(task: task)
+                            .onLongPressGesture(minimumDuration: 0.8) {
+                                editingTask = task
+                                showingAdd = true
+                            }
+                            .onTapGesture {
+                                toggleSelection(for: task)
+                            }                    }
+                    
+                    ForEach(0..<emptyActivitySlotCount, id: \.self) { _ in
+                        Color.clear
+                            .frame(maxWidth: .infinity, minHeight: 94)
+                            .border(.black.opacity(0.15), width: 0.5)
                     }
-                    .buttonStyle(.plain)
-                    .simultaneousGesture(
-                        LongPressGesture(minimumDuration: 1.0).onEnded { _ in
-                            editingTask = task
-                            showingAdd = true
-                        }
-                    )
                 }
+                
+                
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(.black, lineWidth: 1)
+                    
+                )
+                
             }
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-            .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(.black, lineWidth: 1)
-            )
         }
+        .frame(height: 94*4)
     }
-
+    
+    private var emptyActivitySlotCount: Int {
+        max(0, 15 - filteredTasks.count)
+    }
+    
     private var addTaskButton: some View {
         Button {
             editingTask = nil
@@ -210,12 +223,12 @@ struct MarketView: View {
         }
         .buttonStyle(.plain)
     }
-
+    
     private var selectedTaskGrid: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 16)
-                                .fill(Color(.systemBackground))
-                                .shadow(color: .black, radius: 0, x: 0, y: 6)
+                .fill(Color(.systemBackground))
+                .shadow(color: .black, radius: 0, x: 0, y: 6)
             LazyVGrid(columns: columns, spacing: 0) {
                 ForEach(pendingSelectedTasks) { task in
                     ZStack(alignment: .topTrailing) {
@@ -257,11 +270,11 @@ struct MarketView: View {
             .padding(.top, 8)
         }
     }
-
+    
     private var emptySelectedSlotCount: Int {
         max(0, maxSelectedTasks - pendingSelectedTasks.count)
     }
-
+    
     private func proceedText() -> some View {
         Button {
             proceedWithSelectedTasks()
@@ -276,36 +289,46 @@ struct MarketView: View {
         .buttonStyle(.plain)
         .disabled(pendingSelectedTasks.isEmpty)
     }
-
+    
     private func proceedWithSelectedTasks() {
         let pendingObjects = Set(pendingSelectedTasks.prefix(maxSelectedTasks).map { ObjectIdentifier($0) })
-
+        
         for task in tasks {
             task.isSelected = pendingObjects.contains(ObjectIdentifier(task))
             task.isPendingSelected = false
         }
-
+        
         try? context.save()
     }
-
+    
     private func toggleSelection(for task: TaskItem) {
         if task.isPendingSelected {
             task.isPendingSelected = false
         } else if pendingSelectedTasks.count < maxSelectedTasks {
             task.isPendingSelected = true
         }
-
+        
         try? context.save()
     }
-
+    
     private func syncPendingSelectionFromCommittedSelection() {
         for task in tasks {
             task.isPendingSelected = task.isSelected
         }
-
+        
         try? context.save()
     }
-
+    
+    private func seedDefaultTasksIfNeeded() {
+        guard tasks.isEmpty else { return }
+        
+        for task in TaskItem.defaultTasks {
+            context.insert(task)
+        }
+        
+        try? context.save()
+    }
+    
     private func createStateIfNeeded() {
         if states.isEmpty {
             let state = DailyState()
@@ -318,7 +341,7 @@ struct MarketView: View {
 private enum EnergyFilter: CaseIterable, Hashable {
     case draining
     case energizing
-
+    
     var title: String {
         switch self {
         case .draining:
@@ -334,28 +357,28 @@ private struct GridPaperBackground: View {
         Canvas { context, size in
             let smallSpacing: CGFloat = 16
             let largeSpacing: CGFloat = 64
-
+            
             for x in stride(from: 0, through: size.width, by: smallSpacing) {
                 var path = Path()
                 path.move(to: CGPoint(x: x, y: 0))
                 path.addLine(to: CGPoint(x: x, y: size.height))
                 context.stroke(path, with: .color(Color.blue.opacity(0.08)), lineWidth: 1)
             }
-
+            
             for y in stride(from: 0, through: size.height, by: smallSpacing) {
                 var path = Path()
                 path.move(to: CGPoint(x: 0, y: y))
                 path.addLine(to: CGPoint(x: size.width, y: y))
                 context.stroke(path, with: .color(Color.blue.opacity(0.08)), lineWidth: 1)
             }
-
+            
             for x in stride(from: 0, through: size.width, by: largeSpacing) {
                 var path = Path()
                 path.move(to: CGPoint(x: x, y: 0))
                 path.addLine(to: CGPoint(x: x, y: size.height))
                 context.stroke(path, with: .color(Color.red.opacity(0.08)), lineWidth: 1)
             }
-
+            
             for y in stride(from: 0, through: size.height, by: largeSpacing) {
                 var path = Path()
                 path.move(to: CGPoint(x: 0, y: y))
@@ -369,6 +392,17 @@ private struct GridPaperBackground: View {
 }
 
 #Preview {
-    MarketView()
-        .modelContainer(for: [TaskItem.self, DailyState.self], inMemory: true)
+    let container = try! ModelContainer(
+        for: TaskItem.self, DailyState.self,
+        configurations: ModelConfiguration(isStoredInMemoryOnly: true)
+    )
+    
+    for task in TaskItem.defaultTasks {
+        container.mainContext.insert(task)
+    }
+    
+    return MarketView()
+        .modelContainer(container)
+    //    MarketView()
+    //        .modelContainer(for: [TaskItem.self, DailyState.self], inMemory: true)
 }
