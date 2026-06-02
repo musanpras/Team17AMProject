@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct TabViewComponent: View {
+struct MainTabView: View {
     
     @State private var selectedTab: Tab = .home
 
@@ -24,11 +24,11 @@ struct TabViewComponent: View {
                     MarketView()
                         .tag(Tab.market)
                 }
-
+                .toolbarVisibility(.hidden, for: .tabBar)
                 // Custom tab bar
-//                CustomTabView(selectedTab: $selectedTab)
-//                    .padding(.horizontal, 24)
-//                    .padding(.bottom, 10)
+                CustomTabView(selectedTab: $selectedTab)
+                    .padding(.horizontal, 24)
+                
             }
         }
 }
@@ -36,5 +36,5 @@ struct TabViewComponent: View {
 
 
 #Preview {
-    TabViewComponent()
+    MainTabView()
 }
