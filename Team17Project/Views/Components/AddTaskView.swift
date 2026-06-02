@@ -9,28 +9,29 @@ import SwiftUI
 import SwiftData
 
 struct AddTaskView: View {
-
+    
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var context
-
+    
     @State private var title = ""
     @State private var energy = ""
     @State private var isDraining = true
-    @State private var icon = "☺️"
-
+    @State private var icon = "🪫"
+    
     var onSave: (() -> Void)?
     var onCancel: (() -> Void)?
-
+    
     private var isFormValid: Bool {
         !title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         && !icon.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         && Int(energy) != nil
     }
-
+    
     private var energyTypeText: String {
         isDraining ? "draining" : "energizing"
     }
-
+    
+    
     var body: some View {
         ZStack(alignment: .top) {
             RoundedRectangle(cornerRadius: 24)
@@ -40,21 +41,21 @@ struct AddTaskView: View {
                     RoundedRectangle(cornerRadius: 24)
                         .stroke(.black, lineWidth: 2)
                 )
-                
-
+            
+            
             VStack(spacing: 14) {
                 Text("custom task")
                     .font(.system(size: 28, weight: .bold))
                     .foregroundStyle(.black)
                     .padding(.top, 28)
-
+                
                 inputPanel
                 energyTypeRow
                 saveButton
             }
             .padding(.horizontal, 18)
             .padding(.bottom, 22)
-
+            
             HStack {
                 circleButton(
                     systemImage: "xmark",
@@ -62,7 +63,7 @@ struct AddTaskView: View {
                     backgroundColor: .white,
                     action: close
                 )
-
+                
                 Spacer()
             }
             .padding(.horizontal, -16)
@@ -70,22 +71,28 @@ struct AddTaskView: View {
         }
         .frame(width: 294, height: 293)
     }
-
+    
     private var inputPanel: some View {
         VStack(spacing: 10) {
             TextField("activity", text: $title)
                 .font(.system(size: 20, weight: .semibold))
-                .textInputAutocapitalization(.words)
+                .textInputAutocapitalization(.never)
                 .foregroundStyle(.black)
-
+                .onChange(of: title) { _, newValue in
+                    if newValue.count > 12 {
+                        title = String(newValue.prefix(12))
+                        
+                    }
+                }
+            
             Divider()
                 .frame(height: 1)
                 .background(.gray.opacity(0.28))
-
+            
             HStack(spacing: 6) {
                 Image(systemName: "bolt.circle")
                     .font(.system(size: 18, weight: .semibold))
-
+                
                 TextField("points", text: $energy)
                     .font(.system(size: 18, weight: .semibold))
                     .keyboardType(.numberPad)
@@ -104,10 +111,10 @@ struct AddTaskView: View {
                 .fill(Color(.systemGray6))
         )
     }
-
+    
     private var energyTypeRow: some View {
         HStack(spacing: 12) {
-            TextField("☺️", text: $icon)
+            TextField("🪫", text: $icon)
                 .font(.system(size: 20))
                 .multilineTextAlignment(.center)
                 .textInputAutocapitalization(.never)
@@ -117,15 +124,15 @@ struct AddTaskView: View {
                 .onChange(of: icon) { _, newValue in
                     icon = sanitizedIcon(from: newValue)
                 }
-
+            
             Spacer()
-
+            
             Text(energyTypeText)
                 .font(.system(size: 21, weight: .medium))
                 .foregroundStyle(.black)
                 .lineLimit(1)
                 .minimumScaleFactor(0.75)
-
+            
             Toggle("", isOn: Binding(
                 get: { !isDraining },
                 set: { isDraining = !$0 }
@@ -136,8 +143,12 @@ struct AddTaskView: View {
             .frame(width: 48)
         }
         .padding(.horizontal, 6)
+        .onChange(of: isDraining){_, newValue in
+            icon = newValue ? "🪫" : "🔋"
+            
+        }
     }
-
+    
     private var saveButton: some View {
         Button {
             saveTask()
@@ -153,7 +164,7 @@ struct AddTaskView: View {
         .disabled(!isFormValid)
         .padding(.top, 4)
     }
-
+    
     private func circleButton(
         systemImage: String,
         foregroundColor: Color,
@@ -171,7 +182,7 @@ struct AddTaskView: View {
         }
         .buttonStyle(.plain)
     }
-
+    
     private func sanitizedIcon(from value: String) -> String {
         let emojiCharacters = value.filter { character in
             let scalars = character.unicodeScalars
@@ -181,33 +192,33 @@ struct AddTaskView: View {
             let hasLetterOrNumber = scalars.contains { scalar in
                 CharacterSet.alphanumerics.contains(scalar)
             }
-
+            
             return hasEmoji && !hasLetterOrNumber
         }
-
+        
         return String(emojiCharacters.prefix(1))
     }
-
+    
     private func close() {
         onCancel?()
         dismiss()
     }
-
+    
     func saveTask() {
-
+        
         guard let energyImpact = Int(energy) else { return }
-
+        
         let task = TaskItem(
-            title: title.trimmingCharacters(in: .whitespacesAndNewlines),
+            title: title.trimmingCharacters(in: .whitespacesAndNewlines).lowercased(),
             energyImpact: energyImpact,
             isDraining: isDraining,
             icon: icon.trimmingCharacters(in: .whitespacesAndNewlines)
         )
-
+        
         context.insert(task)
-
+        
         try? context.save()
-
+        
         onSave?()
         dismiss()
     }

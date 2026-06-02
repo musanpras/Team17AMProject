@@ -30,6 +30,18 @@ struct Team17ProjectApp: App {
             fatalError("Could not create ModelContainer: \(error)")
         }
     }()
+    
+    init () {
+        let context = sharedModelContainer.mainContext
+        let descriptor = FetchDescriptor<TaskItem>()
+        let existing = (try? context.fetch(descriptor)) ?? []
+        
+        guard existing.isEmpty else { return }
+        for task in TaskItem.defaultTasks {
+            context.insert(task)
+        }
+        
+    }
 
     var body: some Scene {
         WindowGroup {
