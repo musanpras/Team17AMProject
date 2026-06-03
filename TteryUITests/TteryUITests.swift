@@ -1,13 +1,13 @@
 //
-//  Team17ProjectUITests.swift
-//  Team17ProjectUITests
+//  TteryUITests.swift
+//  TteryUITests
 //
 //  Created by Muhammad Sandy Prastyo on 22/05/26.
 //
 
 import XCTest
 
-final class Team17ProjectUITests: XCTestCase {
+final class TteryUITests: XCTestCase {
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.

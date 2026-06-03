@@ -24,25 +24,25 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		39852B982FBFF9DC0073D3E5 /* Team17Project.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Team17Project.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		39852BA72FBFF9DE0073D3E5 /* Team17ProjectTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Team17ProjectTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		39852BB12FBFF9DE0073D3E5 /* Team17ProjectUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Team17ProjectUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		39852B982FBFF9DC0073D3E5 /* Ttery.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Ttery.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		39852BA72FBFF9DE0073D3E5 /* TteryTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TteryTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		39852BB12FBFF9DE0073D3E5 /* TteryUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TteryUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		39852B9A2FBFF9DC0073D3E5 /* Team17Project */ = {
+		39852B9A2FBFF9DC0073D3E5 /* Ttery */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Team17Project;
+			path = Ttery;
 			sourceTree = "<group>";
 		};
-		39852BAA2FBFF9DE0073D3E5 /* Team17ProjectTests */ = {
+		39852BAA2FBFF9DE0073D3E5 /* TteryTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Team17ProjectTests;
+			path = TteryTests;
 			sourceTree = "<group>";
 		};
-		39852BB42FBFF9DE0073D3E5 /* Team17ProjectUITests */ = {
+		39852BB42FBFF9DE0073D3E5 /* TteryUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Team17ProjectUITests;
+			path = TteryUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -75,9 +75,9 @@
 		39852B8F2FBFF9DC0073D3E5 = {
 			isa = PBXGroup;
 			children = (
-				39852B9A2FBFF9DC0073D3E5 /* Team17Project */,
-				39852BAA2FBFF9DE0073D3E5 /* Team17ProjectTests */,
-				39852BB42FBFF9DE0073D3E5 /* Team17ProjectUITests */,
+				39852B9A2FBFF9DC0073D3E5 /* Ttery */,
+				39852BAA2FBFF9DE0073D3E5 /* TteryTests */,
+				39852BB42FBFF9DE0073D3E5 /* TteryUITests */,
 				39852B992FBFF9DC0073D3E5 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -85,9 +85,9 @@
 		39852B992FBFF9DC0073D3E5 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				39852B982FBFF9DC0073D3E5 /* Team17Project.app */,
-				39852BA72FBFF9DE0073D3E5 /* Team17ProjectTests.xctest */,
-				39852BB12FBFF9DE0073D3E5 /* Team17ProjectUITests.xctest */,
+				39852B982FBFF9DC0073D3E5 /* Ttery.app */,
+				39852BA72FBFF9DE0073D3E5 /* TteryTests.xctest */,
+				39852BB12FBFF9DE0073D3E5 /* TteryUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -95,9 +95,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		39852B972FBFF9DC0073D3E5 /* Team17Project */ = {
+		39852B972FBFF9DC0073D3E5 /* Ttery */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 39852BBB2FBFF9DE0073D3E5 /* Build configuration list for PBXNativeTarget "Team17Project" */;
+			buildConfigurationList = 39852BBB2FBFF9DE0073D3E5 /* Build configuration list for PBXNativeTarget "Ttery" */;
 			buildPhases = (
 				39852B942FBFF9DC0073D3E5 /* Sources */,
 				39852B952FBFF9DC0073D3E5 /* Frameworks */,
@@ -108,18 +108,18 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				39852B9A2FBFF9DC0073D3E5 /* Team17Project */,
+				39852B9A2FBFF9DC0073D3E5 /* Ttery */,
 			);
-			name = Team17Project;
+			name = Ttery;
 			packageProductDependencies = (
 			);
 			productName = Team17Project;
-			productReference = 39852B982FBFF9DC0073D3E5 /* Team17Project.app */;
+			productReference = 39852B982FBFF9DC0073D3E5 /* Ttery.app */;
 			productType = "com.apple.product-type.application";
 		};
-		39852BA62FBFF9DE0073D3E5 /* Team17ProjectTests */ = {
+		39852BA62FBFF9DE0073D3E5 /* TteryTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 39852BBE2FBFF9DE0073D3E5 /* Build configuration list for PBXNativeTarget "Team17ProjectTests" */;
+			buildConfigurationList = 39852BBE2FBFF9DE0073D3E5 /* Build configuration list for PBXNativeTarget "TteryTests" */;
 			buildPhases = (
 				39852BA32FBFF9DE0073D3E5 /* Sources */,
 				39852BA42FBFF9DE0073D3E5 /* Frameworks */,
@@ -131,18 +131,18 @@
 				39852BA92FBFF9DE0073D3E5 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				39852BAA2FBFF9DE0073D3E5 /* Team17ProjectTests */,
+				39852BAA2FBFF9DE0073D3E5 /* TteryTests */,
 			);
-			name = Team17ProjectTests;
+			name = TteryTests;
 			packageProductDependencies = (
 			);
 			productName = Team17ProjectTests;
-			productReference = 39852BA72FBFF9DE0073D3E5 /* Team17ProjectTests.xctest */;
+			productReference = 39852BA72FBFF9DE0073D3E5 /* TteryTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		39852BB02FBFF9DE0073D3E5 /* Team17ProjectUITests */ = {
+		39852BB02FBFF9DE0073D3E5 /* TteryUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 39852BC12FBFF9DE0073D3E5 /* Build configuration list for PBXNativeTarget "Team17ProjectUITests" */;
+			buildConfigurationList = 39852BC12FBFF9DE0073D3E5 /* Build configuration list for PBXNativeTarget "TteryUITests" */;
 			buildPhases = (
 				39852BAD2FBFF9DE0073D3E5 /* Sources */,
 				39852BAE2FBFF9DE0073D3E5 /* Frameworks */,
@@ -154,13 +154,13 @@
 				39852BB32FBFF9DE0073D3E5 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				39852BB42FBFF9DE0073D3E5 /* Team17ProjectUITests */,
+				39852BB42FBFF9DE0073D3E5 /* TteryUITests */,
 			);
-			name = Team17ProjectUITests;
+			name = TteryUITests;
 			packageProductDependencies = (
 			);
 			productName = Team17ProjectUITests;
-			productReference = 39852BB12FBFF9DE0073D3E5 /* Team17ProjectUITests.xctest */;
+			productReference = 39852BB12FBFF9DE0073D3E5 /* TteryUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -186,7 +186,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 39852B932FBFF9DC0073D3E5 /* Build configuration list for PBXProject "Team17Project" */;
+			buildConfigurationList = 39852B932FBFF9DC0073D3E5 /* Build configuration list for PBXProject "Ttery" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -200,9 +200,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				39852B972FBFF9DC0073D3E5 /* Team17Project */,
-				39852BA62FBFF9DE0073D3E5 /* Team17ProjectTests */,
-				39852BB02FBFF9DE0073D3E5 /* Team17ProjectUITests */,
+				39852B972FBFF9DC0073D3E5 /* Ttery */,
+				39852BA62FBFF9DE0073D3E5 /* TteryTests */,
+				39852BB02FBFF9DE0073D3E5 /* TteryUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -258,12 +258,12 @@
 /* Begin PBXTargetDependency section */
 		39852BA92FBFF9DE0073D3E5 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 39852B972FBFF9DC0073D3E5 /* Team17Project */;
+			target = 39852B972FBFF9DC0073D3E5 /* Ttery */;
 			targetProxy = 39852BA82FBFF9DE0073D3E5 /* PBXContainerItemProxy */;
 		};
 		39852BB32FBFF9DE0073D3E5 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 39852B972FBFF9DC0073D3E5 /* Team17Project */;
+			target = 39852B972FBFF9DC0073D3E5 /* Ttery */;
 			targetProxy = 39852BB22FBFF9DE0073D3E5 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -395,22 +395,25 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Ttery/Ttery.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Ttery/Assets\"";
 				DEVELOPMENT_TEAM = 5M87Z298PZ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Ttery;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.apple.Team17Project;
+				PRODUCT_BUNDLE_IDENTIFIER = com.team17.Ttery;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -427,22 +430,25 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Ttery/Ttery.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Ttery/Assets\"";
 				DEVELOPMENT_TEAM = 5M87Z298PZ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Ttery;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.apple.Team17Project;
+				PRODUCT_BUNDLE_IDENTIFIER = com.team17.Ttery;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -464,7 +470,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.5;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.apple.Team17ProjectTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sandy.TteryTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -472,7 +478,7 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Team17Project.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Team17Project";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Ttery.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Ttery";
 			};
 			name = Debug;
 		};
@@ -486,7 +492,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.5;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.apple.Team17ProjectTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sandy.TteryTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -494,7 +500,7 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Team17Project.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Team17Project";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Ttery.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Ttery";
 			};
 			name = Release;
 		};
@@ -506,7 +512,7 @@
 				DEVELOPMENT_TEAM = 5M87Z298PZ;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.apple.Team17ProjectUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sandy.TteryUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -526,7 +532,7 @@
 				DEVELOPMENT_TEAM = 5M87Z298PZ;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.apple.Team17ProjectUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sandy.TteryUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -541,7 +547,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		39852B932FBFF9DC0073D3E5 /* Build configuration list for PBXProject "Team17Project" */ = {
+		39852B932FBFF9DC0073D3E5 /* Build configuration list for PBXProject "Ttery" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				39852BB92FBFF9DE0073D3E5 /* Debug */,
@@ -550,7 +556,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		39852BBB2FBFF9DE0073D3E5 /* Build configuration list for PBXNativeTarget "Team17Project" */ = {
+		39852BBB2FBFF9DE0073D3E5 /* Build configuration list for PBXNativeTarget "Ttery" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				39852BBC2FBFF9DE0073D3E5 /* Debug */,
@@ -559,7 +565,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		39852BBE2FBFF9DE0073D3E5 /* Build configuration list for PBXNativeTarget "Team17ProjectTests" */ = {
+		39852BBE2FBFF9DE0073D3E5 /* Build configuration list for PBXNativeTarget "TteryTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				39852BBF2FBFF9DE0073D3E5 /* Debug */,
@@ -568,7 +574,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		39852BC12FBFF9DE0073D3E5 /* Build configuration list for PBXNativeTarget "Team17ProjectUITests" */ = {
+		39852BC12FBFF9DE0073D3E5 /* Build configuration list for PBXNativeTarget "TteryUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				39852BC22FBFF9DE0073D3E5 /* Debug */,

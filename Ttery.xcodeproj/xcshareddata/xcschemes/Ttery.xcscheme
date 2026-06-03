@@ -16,9 +16,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "39852B972FBFF9DC0073D3E5"
-               BuildableName = "Team17Project.app"
-               BlueprintName = "Team17Project"
-               ReferencedContainer = "container:Team17Project.xcodeproj">
+               BuildableName = "Ttery.app"
+               BlueprintName = "Ttery"
+               ReferencedContainer = "container:Ttery.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -29,30 +29,6 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES"
       shouldAutocreateTestPlan = "YES">
-      <Testables>
-         <TestableReference
-            skipped = "NO"
-            parallelizable = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "39852BA62FBFF9DE0073D3E5"
-               BuildableName = "Team17ProjectTests.xctest"
-               BlueprintName = "Team17ProjectTests"
-               ReferencedContainer = "container:Team17Project.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO"
-            parallelizable = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "39852BB02FBFF9DE0073D3E5"
-               BuildableName = "Team17ProjectUITests.xctest"
-               BlueprintName = "Team17ProjectUITests"
-               ReferencedContainer = "container:Team17Project.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-      </Testables>
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
@@ -70,9 +46,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "39852B972FBFF9DC0073D3E5"
-            BuildableName = "Team17Project.app"
-            BlueprintName = "Team17Project"
-            ReferencedContainer = "container:Team17Project.xcodeproj">
+            BuildableName = "Ttery.app"
+            BlueprintName = "Ttery"
+            ReferencedContainer = "container:Ttery.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -87,9 +63,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "39852B972FBFF9DC0073D3E5"
-            BuildableName = "Team17Project.app"
-            BlueprintName = "Team17Project"
-            ReferencedContainer = "container:Team17Project.xcodeproj">
+            BuildableName = "Ttery.app"
+            BlueprintName = "Ttery"
+            ReferencedContainer = "container:Ttery.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

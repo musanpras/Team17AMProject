@@ -1,6 +1,6 @@
 //
-//  Team17ProjectApp.swift
-//  Team17Project
+//  Ttery.swift
+//  Ttery
 //
 //  Created by Muhammad Sandy Prastyo on 22/05/26.
 //
@@ -9,7 +9,7 @@ import SwiftData
 import SwiftUI
 
 @main
-struct Team17ProjectApp: App {
+struct TteryApp: App {
     @State private var isSplashActive = true
     
     var sharedModelContainer: ModelContainer = {

@@ -1,13 +1,13 @@
 //
-//  Team17ProjectUITestsLaunchTests.swift
-//  Team17ProjectUITests
+//  TteryUITestsLaunchTests.swift
+//  TteryUITestsLaunchTests
 //
 //  Created by Muhammad Sandy Prastyo on 22/05/26.
 //
 
 import XCTest
 
-final class Team17ProjectUITestsLaunchTests: XCTestCase {
+final class TteryUITestsLaunchTests: XCTestCase {
 
     override class var runsForEachTargetApplicationUIConfiguration: Bool {
         true
