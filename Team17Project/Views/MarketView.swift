@@ -45,7 +45,10 @@ struct MarketView: View {
         NavigationStack {
             
             ZStack {
-                GridPaperBackground()
+                Image("backgroundImage")
+                    .resizable()
+                    .padding(.top, 10)
+                    .ignoresSafeArea()
                 
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {

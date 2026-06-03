@@ -10,6 +10,8 @@ import SwiftUI
 
 @main
 struct Team17ProjectApp: App {
+    @State private var isSplashActive = true
+    
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Item.self,
@@ -20,7 +22,7 @@ struct Team17ProjectApp: App {
             schema: schema,
             isStoredInMemoryOnly: false
         )
-
+        
         do {
             return try ModelContainer(
                 for: schema,
@@ -42,10 +44,24 @@ struct Team17ProjectApp: App {
         }
         
     }
-
+    
     var body: some Scene {
         WindowGroup {
-            MainTabView()
+            ZStack {
+                if isSplashActive {
+                    SplashScreenView()
+                } else {
+                    MainTabView()
+                }
+            }
+            .onAppear {
+                // Keep splash visible for 2.5 seconds, then transition out
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+                    withAnimation(.easeInOut(duration: 0.5)) {
+                        self.isSplashActive = false
+                    }
+                }
+            }
         }
         .modelContainer(sharedModelContainer)
     }
