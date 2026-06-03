@@ -48,14 +48,16 @@ struct CustomTabView: View {
                 HStack {
 
                     tabButton(
-                        image: "house",
-                        title: "Home",
+                        image: "activettery",
+                        unactiveimage: "unactivettery",
+                        title: "ttery",
                         tab: .home
                     )
 
                     tabButton(
                         image: "storefront",
-                        title: "Market",
+                        unactiveimage: "",
+                        title: "market",
                         tab: .market
                     )
                 }
@@ -66,6 +68,7 @@ struct CustomTabView: View {
 
     private func tabButton(
         image: String,
+        unactiveimage: String,
         title: String,
         tab: Tab
     ) -> some View {
@@ -78,8 +81,20 @@ struct CustomTabView: View {
 
             VStack(spacing: 6) {
 
-                Image(systemName: image)
-                    .font(.system(size: 20))
+                if unactiveimage != "" {
+                    if selectedTab == .home {
+                        Image(image)
+                            .resizable()
+                            .frame(width: 20, height: 20)
+                    } else {
+                        Image(unactiveimage)
+                            .resizable()
+                            .frame(width: 20, height: 20)
+                    }
+                } else {
+                    Image(systemName: image)
+                        .font(.system(size: 20))
+                }
 
                 Text(title)
                     .font(.system(size: 12, weight: .medium))

@@ -33,7 +33,8 @@ struct HomeView: View {
     
     private var mascotEnergy: String {
         switch energyValue {
-        case ..<0.25: return "tired"
+        case 0: return "depleted"
+        case 0.01..<0.25: return "tired"
         case 0.25..<0.5: return "idle"
         case 0.5..<0.75: return "energized"
         default: return "hyped"
@@ -50,27 +51,36 @@ struct HomeView: View {
     }
     
     var body: some View {
-        
-        ZStack {
-            Image("backgroundImage")
-                .resizable()
-                .padding(.top, 10)
-                .ignoresSafeArea()
-            
-            ScrollView {
-                VStack(spacing: 20) {
-                    header
-                    mascotSection
-                    energyBar
-                    selectedTaskGrid
+        NavigationStack {
+            ZStack {
+                Image("backgroundImage")
+                    .resizable()
+                    .padding(.top, 10)
+                    .ignoresSafeArea()
+                
+                ScrollView {
+                    VStack(spacing: 20) {
+                        header
+                        mascotSection
+                        energyBar
+                        selectedTaskGrid
+                        tteryInfo
+                    }
+                    .padding(.horizontal, 30)
+                    .padding(.top, 36)
+                    .padding(.bottom, 110)
                 }
-                .padding(.horizontal, 30)
-                .padding(.top, 36)
-                .padding(.bottom, 110)
             }
-        }
-        .onAppear {
-            createStateIfNeeded()
+            .onAppear {
+                createStateIfNeeded()
+                scheduleTaskReminder()
+            }
+            .onChange(of: activeTask?.title) { _, _ in
+                scheduleTaskReminder()
+            }
+            .onChange(of: selectedTasks.count) { _, _ in
+                scheduleTaskReminder()
+            }
         }
     }
     
@@ -82,11 +92,6 @@ struct HomeView: View {
                 Text(activeTask != nil ? activeTask!.title : "pick a task.")
                     .font(.system(size: 32, weight: .bold))
                     .foregroundStyle(.black)
-                
-                Text("focus with [mascot]")
-                    .font(.system(size: 14))
-                    .strikethrough()
-                    .foregroundStyle(.gray)
             }
             .frame(maxWidth: .infinity)
             if hasActiveTask{
@@ -99,6 +104,7 @@ struct HomeView: View {
                             task.isSelected = false
                             try? context.save()
                             activeTask = nil
+                            scheduleTaskReminder()
                         }
                     } label: {
                         Image(systemName: "trash")
@@ -146,39 +152,7 @@ struct HomeView: View {
                 .frame(width: 170, height: 310)
                 .frame(maxWidth: .infinity)
             
-            VStack {
-                Spacer()
-                    .frame(height: 48)
-                SpeechBubble()
-                    .fill(.white)
-                    .shadow(color: .black, radius: 0, x: 0, y: 4)
-                    .overlay(
-                        SpeechBubble()
-                            .stroke(.black, lineWidth: 1)
-                    )
-                    .overlay(
-                        VStack(alignment: .leading, spacing: 4) {
-                            HStack {
-                                Text("good job on doing")
-                                    .font(.system(size: 12))
-                                    .fixedSize(horizontal: false, vertical: true)
-                                Spacer()
-                                    .frame(width: 18)
-                            }
-                            HStack {
-                                Text("assignments today")
-                                    .font(.system(size: 13, weight: .bold))
-                                    .fixedSize(horizontal: false, vertical: true)
-                                Spacer()
-                                    .frame(width: 18)
-                            }
-                        }
-                            .foregroundStyle(.black)
-                            .padding(0)
-                    )
-                    .frame(width: 134, height: 54)
-                Spacer()
-            }
+            
         }
         .frame(height: 330)
     }
@@ -246,12 +220,31 @@ struct HomeView: View {
         }
     }
     
+    private var tteryInfo: some View {
+        NavigationLink {
+            StoryView()
+        } label: {
+            Text("who’s ttery?")
+                .font(.system(size: 14))
+                .underline()
+                .foregroundStyle(.black)
+            }
+            .foregroundColor(.primary)
+        }
+    
     private var hasActiveTask: Bool {
         activeTask != nil
     }
     
     private var emptySelectedSlotCount: Int {
         max(0, maxSelectedTasks - selectedTasks.count)
+    }
+
+    private func scheduleTaskReminder() {
+        TaskReminderNotificationManager.shared.scheduleHourlyReminder(
+            activeTaskTitle: activeTask?.title,
+            selectedTaskCount: selectedTasks.count
+        )
     }
     
     func complete(_ task: TaskItem) {
@@ -284,74 +277,8 @@ struct HomeView: View {
     }
 }
 
-private struct HomeGridPaperBackground: View {
-    var body: some View {
-        Canvas { context, size in
-            let smallSpacing: CGFloat = 16
-            let largeSpacing: CGFloat = 80
-            
-            for x in stride(from: 0, through: size.width, by: smallSpacing) {
-                var path = Path()
-                path.move(to: CGPoint(x: x, y: 0))
-                path.addLine(to: CGPoint(x: x, y: size.height))
-                context.stroke(path, with: .color(Color.blue.opacity(0.08)), lineWidth: 1)
-            }
-            
-            for y in stride(from: 0, through: size.height, by: smallSpacing) {
-                var path = Path()
-                path.move(to: CGPoint(x: 0, y: y))
-                path.addLine(to: CGPoint(x: size.width, y: y))
-                context.stroke(path, with: .color(Color.blue.opacity(0.08)), lineWidth: 1)
-            }
-            
-            for y in stride(from: 0, through: size.height, by: largeSpacing) {
-                var path = Path()
-                path.move(to: CGPoint(x: 0, y: y))
-                path.addLine(to: CGPoint(x: size.width, y: y))
-                context.stroke(path, with: .color(Color.red.opacity(0.08)), lineWidth: 1)
-            }
-        }
-        .background(Color.white)
-        .ignoresSafeArea()
-    }
-}
 
 
-private struct SpeechBubble: Shape {
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        let radius: CGFloat = 8
-        let tailWidth: CGFloat = 18
-        let tailHeight: CGFloat = 10
-        
-        path.move(to: CGPoint(x: rect.minX + radius, y: rect.minY))
-        path.addLine(to: CGPoint(x: rect.maxX - radius - tailWidth, y: rect.minY))
-        path.addQuadCurve(
-            to: CGPoint(x: rect.maxX - tailWidth, y: rect.minY + radius),
-            control: CGPoint(x: rect.maxX - tailWidth, y: rect.minY)
-        )
-        path.addLine(to: CGPoint(x: rect.maxX - tailWidth, y: rect.midY - tailHeight))
-        path.addLine(to: CGPoint(x: rect.maxX, y: rect.midY - tailHeight - 10))
-        path.addLine(to: CGPoint(x: rect.maxX - tailWidth, y: rect.midY + 2))
-        path.addLine(to: CGPoint(x: rect.maxX - tailWidth, y: rect.maxY - radius))
-        path.addQuadCurve(
-            to: CGPoint(x: rect.maxX - tailWidth - radius, y: rect.maxY),
-            control: CGPoint(x: rect.maxX - tailWidth, y: rect.maxY)
-        )
-        path.addLine(to: CGPoint(x: rect.minX + radius, y: rect.maxY))
-        path.addQuadCurve(
-            to: CGPoint(x: rect.minX, y: rect.maxY - radius),
-            control: CGPoint(x: rect.minX, y: rect.maxY)
-        )
-        path.addLine(to: CGPoint(x: rect.minX, y: rect.minY + radius))
-        path.addQuadCurve(
-            to: CGPoint(x: rect.minX + radius, y: rect.minY),
-            control: CGPoint(x: rect.minX, y: rect.minY)
-        )
-        
-        return path
-    }
-}
 
 #Preview {
     HomeView()

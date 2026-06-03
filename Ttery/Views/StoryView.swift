@@ -8,12 +8,19 @@
 import SwiftUI
 
 struct StoryView: View {
+    @Environment(\.dismiss) private var dismiss
+    
     var body: some View {
         ZStack {
-            GridPaperBackground()
+            Image("backgroundImage")
+                .resizable()
+                .padding(.top, 10)
+                .ignoresSafeArea()
+            
             VStack(spacing: 0) {
                 HStack(spacing: 0) {
                     Button {
+                        dismiss()
                     } label: {
                         Image(systemName: "chevron.left")
                             .font(.system(size: 24, weight: .bold))
@@ -28,7 +35,7 @@ struct StoryView: View {
                     Text("info")
                         .font(.system(size: 32, weight: .bold))
                         .foregroundStyle(.black)
-                
+                    
                     Spacer()
                     
                     Color.clear
@@ -36,51 +43,17 @@ struct StoryView: View {
                 }
                 .padding(.horizontal, 16)
                 .padding(.top, 12)
-
+                
                 AccordionListView()
                 
             }
         }
+        .navigationBarBackButtonHidden(true)
     }
 }
 
-private struct GridPaperBackground: View {
-    var body: some View {
-        Canvas { context, size in
-            let smallSpacing: CGFloat = 16
-            let largeSpacing: CGFloat = 64
-            
-            for x in stride(from: 0, through: size.width, by: smallSpacing) {
-                var path = Path()
-                path.move(to: CGPoint(x: x, y: 0))
-                path.addLine(to: CGPoint(x: x, y: size.height))
-                context.stroke(path, with: .color(Color.blue.opacity(0.08)), lineWidth: 1)
-            }
-            
-            for y in stride(from: 0, through: size.height, by: smallSpacing) {
-                var path = Path()
-                path.move(to: CGPoint(x: 0, y: y))
-                path.addLine(to: CGPoint(x: size.width, y: y))
-                context.stroke(path, with: .color(Color.blue.opacity(0.08)), lineWidth: 1)
-            }
-            
-            for x in stride(from: 0, through: size.width, by: largeSpacing) {
-                var path = Path()
-                path.move(to: CGPoint(x: x, y: 0))
-                path.addLine(to: CGPoint(x: x, y: size.height))
-                context.stroke(path, with: .color(Color.red.opacity(0.08)), lineWidth: 1)
-            }
-            
-            for y in stride(from: 0, through: size.height, by: largeSpacing) {
-                var path = Path()
-                path.move(to: CGPoint(x: 0, y: y))
-                path.addLine(to: CGPoint(x: size.width, y: y))
-                context.stroke(path, with: .color(Color.red.opacity(0.08)), lineWidth: 1)
-            }
-        }
-        .background(Color.white)
-        .ignoresSafeArea()
-    }
+#Preview {
+    HomeView()
 }
 
 #Preview {

@@ -55,6 +55,8 @@ struct TteryApp: App {
                 }
             }
             .onAppear {
+                TaskReminderNotificationManager.shared.requestAuthorization()
+
                 // Keep splash visible for 2.5 seconds, then transition out
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
                     withAnimation(.easeInOut(duration: 0.5)) {

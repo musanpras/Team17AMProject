@@ -16,8 +16,13 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "39852B972FBFF9DC0073D3E5"
+<<<<<<<< Updated upstream:Ttery.xcodeproj/xcshareddata/xcschemes/Ttery.xcscheme
                BuildableName = "Ttery.app"
                BlueprintName = "Ttery"
+========
+               BuildableName = "Team17Project.app"
+               BlueprintName = "Team17Project"
+>>>>>>>> Stashed changes:Ttery.xcodeproj/xcshareddata/xcschemes/Team17Project.xcscheme
                ReferencedContainer = "container:Ttery.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -29,6 +34,33 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES"
       shouldAutocreateTestPlan = "YES">
+<<<<<<<< Updated upstream:Ttery.xcodeproj/xcshareddata/xcschemes/Ttery.xcscheme
+========
+      <Testables>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "39852BA62FBFF9DE0073D3E5"
+               BuildableName = "Team17ProjectTests.xctest"
+               BlueprintName = "Team17ProjectTests"
+               ReferencedContainer = "container:Ttery.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "39852BB02FBFF9DE0073D3E5"
+               BuildableName = "Team17ProjectUITests.xctest"
+               BlueprintName = "Team17ProjectUITests"
+               ReferencedContainer = "container:Ttery.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+      </Testables>
+>>>>>>>> Stashed changes:Ttery.xcodeproj/xcshareddata/xcschemes/Team17Project.xcscheme
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
@@ -46,8 +78,13 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "39852B972FBFF9DC0073D3E5"
+<<<<<<<< Updated upstream:Ttery.xcodeproj/xcshareddata/xcschemes/Ttery.xcscheme
             BuildableName = "Ttery.app"
             BlueprintName = "Ttery"
+========
+            BuildableName = "Team17Project.app"
+            BlueprintName = "Team17Project"
+>>>>>>>> Stashed changes:Ttery.xcodeproj/xcshareddata/xcschemes/Team17Project.xcscheme
             ReferencedContainer = "container:Ttery.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -63,8 +100,13 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "39852B972FBFF9DC0073D3E5"
+<<<<<<<< Updated upstream:Ttery.xcodeproj/xcshareddata/xcschemes/Ttery.xcscheme
             BuildableName = "Ttery.app"
             BlueprintName = "Ttery"
+========
+            BuildableName = "Team17Project.app"
+            BlueprintName = "Team17Project"
+>>>>>>>> Stashed changes:Ttery.xcodeproj/xcshareddata/xcschemes/Team17Project.xcscheme
             ReferencedContainer = "container:Ttery.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

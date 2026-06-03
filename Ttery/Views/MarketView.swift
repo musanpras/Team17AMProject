@@ -302,6 +302,11 @@ struct MarketView: View {
         }
         
         try? context.save()
+
+        TaskReminderNotificationManager.shared.scheduleHourlyReminder(
+            activeTaskTitle: nil,
+            selectedTaskCount: pendingObjects.count
+        )
     }
     
     private func toggleSelection(for task: TaskItem) {
@@ -352,45 +357,6 @@ private enum EnergyFilter: CaseIterable, Hashable {
         case .energizing:
             return "energizing"
         }
-    }
-}
-
-private struct GridPaperBackground: View {
-    var body: some View {
-        Canvas { context, size in
-            let smallSpacing: CGFloat = 16
-            let largeSpacing: CGFloat = 64
-            
-            for x in stride(from: 0, through: size.width, by: smallSpacing) {
-                var path = Path()
-                path.move(to: CGPoint(x: x, y: 0))
-                path.addLine(to: CGPoint(x: x, y: size.height))
-                context.stroke(path, with: .color(Color.blue.opacity(0.08)), lineWidth: 1)
-            }
-            
-            for y in stride(from: 0, through: size.height, by: smallSpacing) {
-                var path = Path()
-                path.move(to: CGPoint(x: 0, y: y))
-                path.addLine(to: CGPoint(x: size.width, y: y))
-                context.stroke(path, with: .color(Color.blue.opacity(0.08)), lineWidth: 1)
-            }
-            
-            for x in stride(from: 0, through: size.width, by: largeSpacing) {
-                var path = Path()
-                path.move(to: CGPoint(x: x, y: 0))
-                path.addLine(to: CGPoint(x: x, y: size.height))
-                context.stroke(path, with: .color(Color.red.opacity(0.08)), lineWidth: 1)
-            }
-            
-            for y in stride(from: 0, through: size.height, by: largeSpacing) {
-                var path = Path()
-                path.move(to: CGPoint(x: 0, y: y))
-                path.addLine(to: CGPoint(x: size.width, y: y))
-                context.stroke(path, with: .color(Color.red.opacity(0.08)), lineWidth: 1)
-            }
-        }
-        .background(Color.white)
-        .ignoresSafeArea()
     }
 }
 
