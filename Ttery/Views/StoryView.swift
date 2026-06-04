@@ -43,6 +43,7 @@ struct StoryView: View {
                 }
                 .padding(.horizontal, 16)
                 .padding(.top, 12)
+                .padding(.bottom, 5)
                 
                 AccordionListView()
                 
