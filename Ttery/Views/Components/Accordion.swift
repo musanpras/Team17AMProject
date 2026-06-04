@@ -4,56 +4,84 @@
 //
 //  Created by Imelda Damayanti on 03/06/26.
 
-
-
 import SwiftUI
+
 struct AccordionItem: View {
     let title: String
     let paragraphs: [String]
-    
-    @State private var isExpanded: Bool = false
-    
+
+    @State private var isExpanded = false
+
     var body: some View {
-        VStack(spacing: 0) {
-            Button(action: {
-                //                withAnimation(.easeInOut(duration: 0.25)) {
-                isExpanded.toggle()
-                //                }
-            }) {
-                HStack {
-                    Spacer()
-                    Text(title)
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundColor(.black)
-                    Spacer()
-                    Image(systemName: "chevron.down")
-                        .font(.system(size: 13, weight: .medium))
-                        .foregroundColor(.black)
-                        .rotationEffect(.degrees(isExpanded ? 180 : 0))
-                }
-                .padding(.horizontal, 20)
-                .frame(height: 40)
-            }
-            
+        ZStack(alignment: .top) {
             if isExpanded {
                 VStack(alignment: .leading, spacing: 16) {
                     ForEach(paragraphs, id: \.self) { text in
                         Text(text)
                             .font(.system(size: 13))
                             .foregroundColor(.black.opacity(0.8))
-                            .fixedSize(horizontal: false, vertical: true)
                     }
                 }
                 .padding(.horizontal, 20)
-                .padding(.bottom, 24)
+                .padding(.top, 50)
+                .padding(.bottom, 20)
+                .background(Color.white)
+                .clipShape(RoundedRectangle(cornerRadius: 20))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20)
+                        .stroke(Color.black, lineWidth: 1)
+                )
+                .background(
+                    RoundedRectangle(cornerRadius: 20)
+                        .fill(Color.black)
+                        .offset(y: 6)
+                )
             }
+
+            Button {
+                withAnimation(.easeInOut(duration: 0.25)) {
+                    isExpanded.toggle()
+                }
+            } label: {
+                HStack {
+                    Spacer()
+
+                    Text(title)
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundColor(.black)
+
+                    Spacer()
+
+                    Image(systemName: "chevron.down")
+                        .rotationEffect(.degrees(isExpanded ? 180 : 0))
+                        .foregroundColor(.black)
+                }
+                .padding(.horizontal, 20)
+                .frame(height: 40)
+            }
+            .background(Color.white)
+            .clipShape(Capsule())
+            .overlay(
+                Capsule()
+                    .stroke(Color.black, lineWidth: 1)
+            )
+         
+            .background(
+                !isExpanded
+                  ? AnyView(
+                      Capsule()
+                          .fill(Color.black)
+                          .offset(y: 6)
+                    )
+                  : AnyView(EmptyView())
+
+            )
+            .zIndex(1)
         }
-        .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: 50))
-        .background(RoundedRectangle(cornerRadius: 50).fill(Color.black).offset(y: 6))
-        .overlay(RoundedRectangle(cornerRadius: 50).stroke(Color.black, lineWidth: 1))
+
     }
 }
+
 
 struct AccordionListView: View {
     var body: some View {
@@ -62,7 +90,7 @@ struct AccordionListView: View {
                 AccordionItem(
                     title: "how the app works",
                     paragraphs: [
-                        "ttery is an energy organizer. there’s no locks, timers, or day schedules - just an energy bar that lets you determine what tasks to prioritize at any given moment.",
+                        "ttery is an energy organizer. there’s no locks, timers, or day schedules - ju  st an energy bar that lets you determine what tasks to prioritize at any given moment.",
                         "simply head on over to the marketplace. this is your menu of tasks, classified as either energizing (adds to your energy) or draining (takes from it). you can edit the existing tasks, or create custom ones.",
                         "add up to 4 tasks to your cart, using the energy bar here as a preview.",
                         "once you return to the home screen, our app mascot ttery will help you focus while you work on one task at a time. when you’ve completed it, your energy bar will update. no pressure, though - you can cancel the task with no holds barred.",
