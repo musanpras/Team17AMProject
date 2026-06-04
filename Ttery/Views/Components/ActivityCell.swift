@@ -16,7 +16,7 @@ struct ActivityCell: View {
     init(
         icon: String = "🚿",
         title: String = "shower",
-        energyImpact: Int = 15,
+        energyImpact: Int = 2,
         isDraining: Bool = false
     ) {
         self.icon = icon
@@ -32,10 +32,6 @@ struct ActivityCell: View {
         self.isDraining = task.isDraining
     }
 
-    private var energyText: String {
-        "\(energyImpact)"
-    }
-
     var body: some View {
         VStack(spacing: 3) {
             Text(icon)
@@ -46,16 +42,16 @@ struct ActivityCell: View {
                 .font(.system(size: 13, weight: .bold))
                 .lineLimit(1)
                 .minimumScaleFactor(0.65)
-
+            
             HStack(spacing: 3) {
-                Image(systemName: isDraining ? "bolt.circle.fill" : "bolt.circle")
-                    .font(.system(size: 12))
-                
-
-                Text(energyText)
-                    .font(.system(size: 12, weight: .medium))
+                ForEach(1...energyImpact, id: \.self) {_ in
+                    Image(systemName: isDraining ? "arrowshape.down.fill" : "arrowshape.up")
+                        .font(.system(size: 12))
+                        .foregroundStyle(.black)
+                    
+                }
             }
-            .foregroundStyle(.black)
+
         }
         .frame(maxWidth: .infinity, minHeight: 94)
         .background(.white.opacity(0.75))

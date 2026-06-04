@@ -14,10 +14,13 @@ struct MarketView: View {
     @Query private var tasks: [TaskItem]
     @Query private var states: [DailyState]
     
-    @State private var showingAdd = false
-    @State private var selectedFilter: EnergyFilter = .draining
+    @State private var showingAdd: Bool = false
+    @State private var showNotif: Bool = false
+    @State private var selectedFilter: EnergyFilter = .energizing
     
     @State private var editingTask: TaskItem?
+    @State private var tempTask: TaskItem?
+    @State private var remainingEnergy: Int = 0
     private let maxSelectedTasks = 4
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 0), count: 4)
     
@@ -67,9 +70,14 @@ struct MarketView: View {
                 if showingAdd {
                     addTaskPopup
                 }
+                
+                if showNotif {
+                    warningPopup
+                }
             }
             .toolbar(.hidden, for: .navigationBar)
             .onAppear {
+                remainingEnergy = Int(dailyState?.currentEnergy ?? 0)
                 createStateIfNeeded()
                 seedDefaultTasksIfNeeded()
                 syncPendingSelectionFromCommittedSelection()
@@ -95,6 +103,32 @@ struct MarketView: View {
                 onCancel: {
                     editingTask = nil
                     showingAdd = false
+                }
+            )
+            .frame(maxWidth: 660)
+            .padding(.horizontal, 18)
+        }
+        .transition(.opacity.combined(with: .scale(scale: 0.96)))
+        .zIndex(10)
+    }
+    
+    private var warningPopup: some View {
+        ZStack {
+            Color.black.opacity(0.18)
+                .ignoresSafeArea()
+                .onTapGesture {
+                    showNotif = false
+                }
+            
+            PopUpNotif(
+                onClick: {
+                    toggleSelection(for: tempTask!)
+                    tempTask = nil
+                    showNotif = false
+                },
+                onCancel: {
+                    tempTask = nil
+                    showNotif = false
                 }
             )
             .frame(maxWidth: 660)
@@ -144,22 +178,42 @@ struct MarketView: View {
     }
     
     private var filterPicker: some View {
-        Picker("Energy type", selection: $selectedFilter) {
-            ForEach(EnergyFilter.allCases, id: \.self) { filter in
-                Text(filter.title)
-                    .tag(filter)
+        HStack(spacing: 0) {
+            ForEach(EnergyFilter.displayOrder, id: \.self) { filter in
+                Button {
+                    selectedFilter = filter
+                } label: {
+                    HStack(spacing: 12) {
+                        Image(systemName: filter.icon)
+                            .font(.system(size: 16, weight: .bold))
+                        
+                        Text(filter.title)
+                            .font(.system(size: 16, weight: .bold))
+                    }
+                    .foregroundStyle(.black)
+                    .frame(maxWidth: .infinity, minHeight: 48)
+                    .background(
+                        RoundedRectangle(cornerRadius: 24)
+                            .fill(selectedFilter == filter ? .white : .clear)
+                            .shadow(
+                                color: selectedFilter == filter ? .black.opacity(0.18) : .clear,
+                                radius: 10,
+                                x: 0,
+                                y: 2
+                            )
+                    )
+                }
+                .buttonStyle(.plain)
             }
         }
-        .pickerStyle(.segmented)
-        .labelsHidden()
-        .frame(height: 34)
+        .padding(4)
         .background(
-            RoundedRectangle(cornerRadius: 17)
+            RoundedRectangle(cornerRadius: 28)
                 .fill(Color(.systemGray6))
-                .shadow(color: .black, radius: 0, x: 0, y: 4)
+                .shadow(color: .black, radius: 0, x: 0, y: 5)
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 17)
+            RoundedRectangle(cornerRadius: 28)
                 .stroke(.black, lineWidth: 1)
         )
     }
@@ -174,15 +228,38 @@ struct MarketView: View {
                 LazyVGrid(columns: columns, spacing: 0) {
                     addTaskButton
                     
-                    ForEach(filteredTasks) { task in
-                        ActivityCell(task: task)
-                            .onLongPressGesture(minimumDuration: 0.8) {
-                                editingTask = task
-                                showingAdd = true
+                    ForEach(filteredTasks.reversed()) { task in
+                        ZStack{
+                            ActivityCell(task: task)
+                            
+                            if task.isDraining && ((task.energyImpact * 10) > remainingEnergy){
+                                Button {
+                                    tempTask = task
+                                    showNotif = true
+                                } label: {
+                                    Image(systemName: "exclamationmark")
+                                        .font(.system(size: 12, weight: .bold))
+                                        .foregroundStyle(.white)
+                                        .frame(width: 18, height: 18)
+                                        .background(Circle().fill(.yellow))
+                                }
+                                .buttonStyle(.plain)
+                                .offset(x: 30, y: -35)
                             }
-                            .onTapGesture {
+                        }
+                        .onLongPressGesture(minimumDuration: 0.8) {
+                            editingTask = task
+                            showingAdd = true
+                        }
+                        .onTapGesture {
+                            if task.isDraining && ((task.energyImpact * 10) > remainingEnergy) && !task.isPendingSelected {
+                                tempTask = task
+                                showNotif = true
+                            }else {
                                 toggleSelection(for: task)
-                            }                    }
+                            }
+                            
+                        }                    }
                     
                     ForEach(0..<emptyActivitySlotCount, id: \.self) { _ in
                         Color.clear
@@ -231,19 +308,27 @@ struct MarketView: View {
                 ForEach(pendingSelectedTasks) { task in
                     ZStack(alignment: .topTrailing) {
                         ActivityCell(task: task)
+                            .background(task.isSelected ? .gray : .white.opacity(0.75))
                         
-                        Button {
-                            task.isPendingSelected = false
-                            try? context.save()
-                        } label: {
-                            Image(systemName: "minus")
-                                .font(.system(size: 12, weight: .bold))
-                                .foregroundStyle(.white)
-                                .frame(width: 18, height: 18)
-                                .background(Circle().fill(.red))
+                        if !task.isSelected{
+                            Button {
+                                task.isPendingSelected = false
+                                if task.isDraining {
+                                    remainingEnergy += (task.energyImpact * 10)
+                                } else {
+                                    remainingEnergy -= (task.energyImpact * 10)
+                                }
+                                try? context.save()
+                            } label: {
+                                Image(systemName: "minus")
+                                    .font(.system(size: 12, weight: .bold))
+                                    .foregroundStyle(.white)
+                                    .frame(width: 18, height: 18)
+                                    .background(Circle().fill(.red))
+                            }
+                            .buttonStyle(.plain)
+                            .offset(x: -4, y: 4)
                         }
-                        .buttonStyle(.plain)
-                        .offset(x: -4, y: 4)
                     }
                     .simultaneousGesture(
                         LongPressGesture(minimumDuration: 1.0).onEnded { _ in
@@ -293,11 +378,11 @@ struct MarketView: View {
         
         for task in tasks {
             task.isSelected = pendingObjects.contains(ObjectIdentifier(task))
-            task.isPendingSelected = false
+            //            task.isPendingSelected = false
         }
         
         try? context.save()
-
+        
         TaskReminderNotificationManager.shared.scheduleHourlyReminder(
             activeTaskTitle: nil,
             selectedTaskCount: pendingObjects.count
@@ -307,9 +392,21 @@ struct MarketView: View {
     private func toggleSelection(for task: TaskItem) {
         if task.isPendingSelected {
             task.isPendingSelected = false
+            if task.isDraining {
+                remainingEnergy += (task.energyImpact * 10)
+            } else {
+                remainingEnergy -= (task.energyImpact * 10)
+            }
         } else if pendingSelectedTasks.count < maxSelectedTasks {
             task.isPendingSelected = true
+            if task.isDraining {
+                remainingEnergy -= (task.energyImpact * 10)
+            } else {
+                remainingEnergy += (task.energyImpact * 10)
+            }
         }
+        
+        
         
         try? context.save()
     }
@@ -342,8 +439,10 @@ struct MarketView: View {
 }
 
 private enum EnergyFilter: CaseIterable, Hashable {
-    case draining
     case energizing
+    case draining
+    
+    static let displayOrder: [EnergyFilter] = [.energizing, .draining ]
     
     var title: String {
         switch self {

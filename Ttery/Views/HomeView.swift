@@ -12,8 +12,11 @@ struct HomeView: View {
     @Environment(\.modelContext) private var context
     
     @State private var activeTask: TaskItem? = nil
+    @State private var tempTask: TaskItem? = nil
     @Query private var tasks: [TaskItem]
     @Query private var states: [DailyState]
+    
+    @State private var showNotif: Bool = false
     
     private let maxSelectedTasks = 4
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 0), count: 4)
@@ -71,6 +74,10 @@ struct HomeView: View {
                     .padding(.bottom, 110)
                 }
                 .scrollDisabled(true)
+                
+                if showNotif {
+                    warningPopup
+                }
             }
             .onAppear {
                 createStateIfNeeded()
@@ -85,6 +92,31 @@ struct HomeView: View {
         }
     }
     
+    private var warningPopup: some View {
+        ZStack {
+            Color.black.opacity(0.18)
+                .ignoresSafeArea()
+                .onTapGesture {
+                    showNotif = false
+                }
+            
+            PopUpNotif(
+                onClick: {
+                    activeTask = tempTask
+                    tempTask = nil
+                    showNotif = false
+                },
+                onCancel: {
+                    showNotif = false
+                }
+            )
+            .frame(maxWidth: 660)
+            .padding(.horizontal, 18)
+        }
+        .transition(.opacity.combined(with: .scale(scale: 0.96)))
+        .zIndex(10)
+    }
+    
     private var header: some View {
         
         
@@ -93,6 +125,7 @@ struct HomeView: View {
                 Button {
                     if let task = activeTask {
                         task.isSelected = false
+                        task.isPendingSelected = false
                         try? context.save()
                         activeTask = nil
                         scheduleTaskReminder()
@@ -195,9 +228,31 @@ struct HomeView: View {
                 ForEach(selectedTasks) { task in
                     Button {
                         //                        complete(task)
-                        activeTask = (activeTask?.id == task.id) ? nil : task
+                        if ((task.energyImpact * 10) > dailyState?.currentEnergy ?? 0) && task.isDraining {
+                            showNotif = true
+                            tempTask = task
+                        } else {
+                            activeTask = task
+                        }
                     } label: {
-                        ActivityCell(task: task)
+                        ZStack {
+                            ActivityCell(task: task)
+                            
+                            
+                            if task.isDraining && ((task.energyImpact * 10) > dailyState?.currentEnergy ?? 0){
+                                Button {
+                                    showNotif = true
+                                } label: {
+                                    Image(systemName: "exclamationmark")
+                                        .font(.system(size: 12, weight: .bold))
+                                        .foregroundStyle(.white)
+                                        .frame(width: 18, height: 18)
+                                        .background(Circle().fill(.yellow))
+                                }
+                                .buttonStyle(.plain)
+                                .offset(x: 30, y: -35)
+                            }
+                        }
                     }
                     .buttonStyle(.plain)
                 }
@@ -249,9 +304,9 @@ struct HomeView: View {
         guard let state = dailyState else { return }
         
         if task.isDraining {
-            state.currentEnergy -= task.energyImpact
+            state.currentEnergy -= (task.energyImpact * 10)
         } else {
-            state.currentEnergy += task.energyImpact
+            state.currentEnergy += (task.energyImpact * 10)
         }
         
         state.currentEnergy = max(
