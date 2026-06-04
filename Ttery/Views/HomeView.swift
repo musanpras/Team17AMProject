@@ -70,6 +70,7 @@ struct HomeView: View {
                     .padding(.top, 36)
                     .padding(.bottom, 110)
                 }
+                .scrollDisabled(true)
             }
             .onAppear {
                 createStateIfNeeded()

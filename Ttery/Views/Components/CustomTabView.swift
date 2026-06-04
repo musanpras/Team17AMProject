@@ -101,7 +101,7 @@ struct CustomTabView: View {
             }
             .foregroundColor(
                 selectedTab == tab
-                ? Color.blue
+                ? Color.green
                 : Color.black
             )
             .frame(maxWidth: .infinity)
