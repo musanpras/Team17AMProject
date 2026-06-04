@@ -19,7 +19,7 @@ struct AddTaskView: View {
     var onCancel: (() -> Void)?
 
     @State private var title = ""
-    @State private var energy = ""
+    @State private var energy = 1
     @State private var isDraining = true
     @State private var icon = "🪫"
 
@@ -40,7 +40,6 @@ struct AddTaskView: View {
     private var isFormValid: Bool {
         !title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         && !icon.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-        && Int(energy) != nil
     }
     
     private var energyTypeText: String {
@@ -65,6 +64,7 @@ struct AddTaskView: View {
                     .padding(.top, 28)
                 
                 inputPanel
+                energyPanel
                 energyTypeRow
                 saveButton
             }
@@ -117,24 +117,7 @@ struct AddTaskView: View {
                         
                     }
                 }
-            
-            Divider()
-                .frame(height: 1)
-                .background(.gray.opacity(0.28))
-            
-            HStack(spacing: 6) {
-                Image(systemName: "bolt.circle")
-                    .font(.system(size: 18, weight: .semibold))
-                
-                TextField("points", text: $energy)
-                    .font(.system(size: 18, weight: .semibold))
-                    .keyboardType(.numberPad)
-                    .foregroundStyle(.black)
-                    .onChange(of: energy) { _, newValue in
-                        energy = newValue.filter { $0.isNumber }
-                    }
-            }
-            .foregroundStyle(.gray.opacity(0.55))
+    
         }
         .tint(.black)
         .padding(.horizontal, 18)
@@ -143,6 +126,40 @@ struct AddTaskView: View {
             RoundedRectangle(cornerRadius: 24)
                 .fill(Color(.systemGray6))
         )
+    }
+    
+    private var energyPanel: some View {
+        HStack{
+            Button(action: {
+                if energy > 1 {
+                    energy -= 1
+                }
+                    }) {
+                        Image(systemName: "minus.circle.fill")
+                            .resizable()
+                            .frame(width: 24, height: 24)
+                            .foregroundStyle(energy == 1 ? .gray : .black)
+                    }
+            ForEach(1...energy, id: \.self) {_ in
+                if isDraining {
+                    Image(systemName: "arrowshape.down.fill")
+                } else {
+                    Image(systemName: "arrowshape.up")
+                }
+                
+            }
+            Button(action: {
+                if energy < 4 {
+                    energy += 1
+                }
+                    }) {
+                        Image(systemName: "plus.circle.fill")
+                            .resizable()
+                            .frame(width: 24, height: 24)
+                            .foregroundStyle(energy == 4 ? .gray : .black)
+                    }
+            
+        }
     }
     
     private var energyTypeRow: some View {
@@ -236,7 +253,7 @@ struct AddTaskView: View {
         guard let task else { return }
 
         title = task.title
-        energy = "\(task.energyImpact)"
+        energy = task.energyImpact
         isDraining = task.isDraining
         icon = task.icon
     }
@@ -256,17 +273,16 @@ struct AddTaskView: View {
     }
 
     private func saveTask() {
-        guard let energyImpact = Int(energy) else { return }
 
         if let task {
             task.title = title.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-            task.energyImpact = energyImpact
+            task.energyImpact = energy
             task.isDraining = isDraining
             task.icon = icon.trimmingCharacters(in: .whitespacesAndNewlines)
         } else {
             let task = TaskItem(
                 title: title.trimmingCharacters(in: .whitespacesAndNewlines).lowercased(),
-                energyImpact: energyImpact,
+                energyImpact: energy,
                 isDraining: isDraining,
                 icon: icon.trimmingCharacters(in: .whitespacesAndNewlines)
             )
