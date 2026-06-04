@@ -62,6 +62,7 @@ struct MarketView: View {
                     .padding(.top, 18)
                     .padding(.bottom, 100)
                 }
+                .scrollDisabled(true)
                 
                 if showingAdd {
                     addTaskPopup
@@ -138,9 +139,6 @@ struct MarketView: View {
                 .frame(width: 100, height: 20)
                 .overlay(Capsule().stroke(.black, lineWidth: 1))
                 
-                Text("\(dailyState?.currentEnergy ?? 0)")
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundStyle(.black)
             }
         }
     }
@@ -192,8 +190,6 @@ struct MarketView: View {
                             .border(.black.opacity(0.15), width: 0.5)
                     }
                 }
-                
-                
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .overlay(
                     RoundedRectangle(cornerRadius: 12)
@@ -203,7 +199,6 @@ struct MarketView: View {
                 
             }
         }
-        .frame(height: 94*4)
     }
     
     private var emptyActivitySlotCount: Int {
@@ -356,6 +351,15 @@ private enum EnergyFilter: CaseIterable, Hashable {
             return "draining"
         case .energizing:
             return "energizing"
+        }
+    }
+    
+    var icon: String {
+        switch self {
+        case .draining:
+            return "arrowshape.down.fill"
+        case .energizing:
+            return "arrowshape.up"
         }
     }
 }

@@ -86,62 +86,58 @@ struct HomeView: View {
     }
     
     private var header: some View {
-        ZStack(alignment: .leading) {
+        
+        
+        HStack{
+            if hasActiveTask{
+                Button {
+                    if let task = activeTask {
+                        task.isSelected = false
+                        try? context.save()
+                        activeTask = nil
+                        scheduleTaskReminder()
+                    }
+                } label: {
+                    Image(systemName: "trash")
+                        .font(.system(size: 24, weight: .bold))
+                        .foregroundStyle(.white)
+                        .frame(width: 54, height: 54)
+                        .background(Circle().fill(.red).shadow(color: .black, radius: 0, x: 0, y: 4))
+                        .overlay(Circle().stroke(.black, lineWidth: 1))
+                    
+                }
+                .buttonStyle(.plain)
+            }
             
             VStack(spacing: 8) {
-
                 Text(activeTask != nil ? activeTask!.title : "pick a task.")
                     .font(.system(size: 32, weight: .bold))
                     .foregroundStyle(.black)
             }
             .frame(maxWidth: .infinity)
             if hasActiveTask{
-                
-                HStack{
-                    
-                
-                    Button {
-                        if let task = activeTask {
-                            task.isSelected = false
-                            try? context.save()
-                            activeTask = nil
-                            scheduleTaskReminder()
-                        }
-                    } label: {
-                        Image(systemName: "trash")
-                            .font(.system(size: 24, weight: .bold))
-                            .foregroundStyle(.white)
-                            .frame(width: 54, height: 54)
-                            .background(Circle().fill(.red).shadow(color: .black, radius: 0, x: 0, y: 4))
-                            .overlay(Circle().stroke(.black, lineWidth: 1))
-                        
+                Button {
+                    if let task = activeTask {
+                        complete(task)
+                        task.isSelected = false
+                        try? context.save()
+                        activeTask = nil
                     }
-                    .buttonStyle(.plain)
-                    
-                    Spacer()
-                    
-                    
-                    Button {
-                        if let task = activeTask {
-                            complete(task)
-                            task.isSelected = false
-                            try? context.save()
-                            activeTask = nil
-                        }
-                    } label: {
-                        Image(systemName: "checkmark")
-                            .font(.system(size: 24, weight: .bold))
-                            .foregroundStyle(.white)
-                            .frame(width: 54, height: 54)
-                            .background(Circle().fill(.blue).shadow(color: .black, radius: 0, x: 0, y: 4))
-                            .overlay(Circle().stroke(.black, lineWidth: 1))
-                        
-                    }
-                    .buttonStyle(.plain)
+                } label: {
+                    Image(systemName: "checkmark")
+                        .font(.system(size: 24, weight: .bold))
+                        .foregroundStyle(.white)
+                        .frame(width: 54, height: 54)
+                        .background(Circle().fill(.blue).shadow(color: .black, radius: 0, x: 0, y: 4))
+                        .overlay(Circle().stroke(.black, lineWidth: 1))
                     
                 }
+                .buttonStyle(.plain)
             }
+            
         }
+        .frame( height: 54)
+        
     }
     
     private var mascotSection: some View {
@@ -198,7 +194,7 @@ struct HomeView: View {
             LazyVGrid(columns: columns, spacing: 0) {
                 ForEach(selectedTasks) { task in
                     Button {
-//                        complete(task)
+                        //                        complete(task)
                         activeTask = (activeTask?.id == task.id) ? nil : task
                     } label: {
                         ActivityCell(task: task)
@@ -229,9 +225,9 @@ struct HomeView: View {
                 .font(.system(size: 14))
                 .underline()
                 .foregroundStyle(.black)
-            }
-            .foregroundColor(.primary)
         }
+        .foregroundColor(.primary)
+    }
     
     private var hasActiveTask: Bool {
         activeTask != nil
@@ -240,7 +236,7 @@ struct HomeView: View {
     private var emptySelectedSlotCount: Int {
         max(0, maxSelectedTasks - selectedTasks.count)
     }
-
+    
     private func scheduleTaskReminder() {
         TaskReminderNotificationManager.shared.scheduleHourlyReminder(
             activeTaskTitle: activeTask?.title,
