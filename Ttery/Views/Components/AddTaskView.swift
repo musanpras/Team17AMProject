@@ -20,8 +20,8 @@ struct AddTaskView: View {
 
     @State private var title = ""
     @State private var energy = 1
-    @State private var isDraining = true
-    @State private var icon = "🪫"
+    @State private var isDraining = false
+    @State private var icon = "🔋"
 
     init(
         task: TaskItem? = nil,

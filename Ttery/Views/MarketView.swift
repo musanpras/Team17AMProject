@@ -30,7 +30,7 @@ struct MarketView: View {
     
     private var energyValue: Double {
         guard let dailyState, dailyState.maxEnergy > 0 else { return 0 }
-        return Double(dailyState.currentEnergy) / Double(dailyState.maxEnergy)
+        return Double(remainingEnergy) / Double(dailyState.maxEnergy)
     }
     
     private var pendingSelectedTasks: [TaskItem] {
@@ -40,6 +40,15 @@ struct MarketView: View {
     private var filteredTasks: [TaskItem] {
         tasks.filter { task in
             selectedFilter == .draining ? task.isDraining : !task.isDraining
+        }
+    }
+    
+    private var energyColor: Color {
+        switch energyValue {
+        case ..<0.25: return .red
+        case 0.25..<0.5: return .orange
+        case 0.5..<0.75: return .yellow
+        default: return .green
         }
     }
     
@@ -155,7 +164,7 @@ struct MarketView: View {
                     .background(Circle().fill(.white).shadow(color: .black, radius: 0, x: 0, y: 2))
                     .overlay(Circle().stroke(.black, lineWidth: 2))
                     .zIndex(1)
-                    .offset(x: 20)
+                    .offset(x: 16)
                 
                 GeometryReader { proxy in
                     ZStack(alignment: .leading) {
@@ -166,7 +175,7 @@ struct MarketView: View {
                             .offset(y: 2)
                         
                         Capsule()
-                            .fill(.yellow)
+                            .fill(energyColor)
                             .frame(width: proxy.size.width * min(max(energyValue, 0), 1))
                     }
                 }
@@ -306,7 +315,7 @@ struct MarketView: View {
                 .fill(Color(.systemBackground))
                 .shadow(color: .black, radius: 0, x: 0, y: 6)
             LazyVGrid(columns: columns, spacing: 0) {
-                ForEach(pendingSelectedTasks) { task in
+                ForEach(pendingSelectedTasks.reversed()) { task in
                     ZStack(alignment: .topTrailing) {
                         ActivityCell(task: task)
                             .background(task.isSelected ? .gray : .white.opacity(0.75))

@@ -29,9 +29,22 @@
 		39852BB12FBFF9DE0073D3E5 /* TteryUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TteryUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		39405A472FD1E10500A3FA40 /* Exceptions for "Ttery" folder in "Ttery" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 39852B972FBFF9DC0073D3E5 /* Ttery */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		39852B9A2FBFF9DC0073D3E5 /* Ttery */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				39405A472FD1E10500A3FA40 /* Exceptions for "Ttery" folder in "Ttery" target */,
+			);
 			path = Ttery;
 			sourceTree = "<group>";
 		};

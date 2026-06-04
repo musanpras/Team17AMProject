@@ -25,11 +25,11 @@ struct MainTabView: View {
                         .tag(Tab.market)
                 }
                 .toolbarVisibility(.hidden, for: .tabBar)
-                // Custom tab bar
+                // Custom tab view
                 CustomTabView(selectedTab: $selectedTab)
-                    .padding(.horizontal, 24)
                 
             }
+            .ignoresSafeArea(.keyboard, edges: .bottom)
         }
 }
 

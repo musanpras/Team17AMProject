@@ -16,7 +16,7 @@ class DailyState {
     var lastUpdated: Date
 
     init(
-        currentEnergy: Int = 10,
+        currentEnergy: Int = 500,
         maxEnergy: Int = 999,
         lastUpdated: Date = .now
     ) {

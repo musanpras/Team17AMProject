@@ -66,7 +66,7 @@ struct PopUpNotif: View {
                     Button {
                         onClick?()
                     } label: {
-                        Text("who’s ttery?")
+                        Text("go ahead anyway?")
                             .font(.system(size: 14))
                             .underline()
                             .foregroundStyle(.black)

@@ -197,6 +197,7 @@ struct HomeView: View {
                 .overlay(Circle().stroke(.black, lineWidth: 2))
                 .background(Circle().fill(.white).shadow(color: .black, radius: 0, x: 0, y: 4))
                 .zIndex(1)
+            .offset(x: 16)
             
             GeometryReader { proxy in
                 ZStack(alignment: .leading) {
@@ -213,7 +214,6 @@ struct HomeView: View {
             }
             .frame(width: 160, height: 32)
             .overlay(Capsule().stroke(.black, lineWidth: 1))
-            .offset(x: -20)
         }
         .frame(maxWidth: .infinity)
     }
@@ -225,7 +225,7 @@ struct HomeView: View {
                 .shadow(color: .black, radius: 0, x: 0, y: 8)
             
             LazyVGrid(columns: columns, spacing: 0) {
-                ForEach(selectedTasks) { task in
+                ForEach(selectedTasks.reversed()) { task in
                     Button {
                         //                        complete(task)
                         if ((task.energyImpact * 10) > dailyState?.currentEnergy ?? 0) && task.isDraining {
