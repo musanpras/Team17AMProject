@@ -259,28 +259,29 @@ struct MarketView: View {
                                 toggleSelection(for: task)
                             }
                             
-                        }                    }
-                    
-                    ForEach(0..<emptyActivitySlotCount, id: \.self) { _ in
-                        Color.clear
-                            .frame(maxWidth: .infinity, minHeight: 94)
-                            .border(.black.opacity(0.15), width: 0.5)
+                        }
                     }
                 }
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(.black, lineWidth: 1)
-                    
-                )
                 
             }
+            .frame(height: CGFloat(visibleRows) * 94)
+            .scrollBounceBehavior(.basedOnSize)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(.black, lineWidth: 1)
+                
+            )
         }
     }
     
-    private var emptyActivitySlotCount: Int {
-        max(0, 15 - filteredTasks.count)
-    }
+    private var visibleRows: Int {
+           min(4, Int(ceil(Double(filteredTasks.count + 1) / 4.0)))
+       }
+    
+//    private var emptyActivitySlotCount: Int {
+//        max(0, maxSelectedTasks - pendingSelectedTasks.count)
+//    }
     
     private var addTaskButton: some View {
         Button {
