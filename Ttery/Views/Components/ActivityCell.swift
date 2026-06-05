@@ -40,6 +40,7 @@ struct ActivityCell: View {
 
             Text(title)
                 .font(.system(size: 13, weight: .bold))
+                .foregroundStyle(.black)
                 .lineLimit(1)
                 .minimumScaleFactor(0.65)
             

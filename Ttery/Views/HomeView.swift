@@ -71,10 +71,7 @@ struct HomeView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Image("backgroundImage")
-                    .resizable()
-                    .padding(.top, 10)
-                    .ignoresSafeArea()
+                CodedGridBackground()
                 
                 ScrollView {
                     VStack(spacing: 20) {
@@ -238,8 +235,9 @@ struct HomeView: View {
     private var selectedTaskGrid: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 16)
-                .fill(Color(.systemBackground))
-                .shadow(color: .black, radius: 0, x: 0, y: 8)
+                .fill(.white)
+                .shadow(color: .black, radius: 0, x: 0, y: 6)
+                .padding(.top, 16)
             
             LazyVGrid(columns: columns, spacing: 0) {
                 ForEach(selectedTaskSlots.reversed()) { slot in
@@ -280,12 +278,12 @@ struct HomeView: View {
                         .border(.black, width: 0.5)
                 }
             }
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .clipShape(RoundedRectangle(cornerRadius: 16))
             .overlay(
-                RoundedRectangle(cornerRadius: 12)
+                RoundedRectangle(cornerRadius: 16)
                     .stroke(.black, lineWidth: 1)
             )
-            .padding(.top, 10)
+            .padding(.top, 16)
         }
     }
     

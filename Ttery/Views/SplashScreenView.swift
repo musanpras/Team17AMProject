@@ -13,10 +13,7 @@ struct SplashScreenView: View {
     
     var body: some View {
         ZStack{
-            Image("backgroundImage")
-                .resizable()
-                .padding(.top, 10)
-                .ignoresSafeArea()
+            CodedGridBackground()
             
             Image("AppLogo")
                 .resizable()

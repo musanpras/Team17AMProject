@@ -12,10 +12,7 @@ struct StoryView: View {
     
     var body: some View {
         ZStack {
-            Image("backgroundImage")
-                .resizable()
-                .padding(.top, 10)
-                .ignoresSafeArea()
+            CodedGridBackground()
             
             VStack(spacing: 0) {
                 HStack(spacing: 0) {
