@@ -20,12 +20,17 @@ struct MarketView: View {
     @State private var editingTask: TaskItem?
     @State private var tempTask: TaskItem?
     @State private var remainingEnergy: Int = 0
-    @State private var navigateToHome = false
-    @State private var navigateToMarket = false
+    
     @Binding var selectedTab: Tab
-
+    
     private let maxSelectedTasks = 4
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 0), count: 4)
+    
+    private struct SelectedTaskSlot: Identifiable {
+        let id = UUID()
+        let task: TaskItem
+        let isCommitted: Bool
+    }
     
     private var dailyState: DailyState? {
         states.first
@@ -37,8 +42,22 @@ struct MarketView: View {
     }
     
     private var pendingSelectedTasks: [TaskItem] {
-        tasks.filter { $0.isPendingSelected }
+        tasks.flatMap{task in Array(repeating: task, count: task.pendingSelectionCount)
+        }
     }
+    
+    private var pendingSelectedSlots: [SelectedTaskSlot] {
+        var committedUsed: [ObjectIdentifier: Int] = [:]
+        
+        return pendingSelectedTasks.map { task in
+            let id = ObjectIdentifier(task)
+            let used = committedUsed[id, default: 0]
+            let isCommitted = used < task.selectedCount
+            committedUsed[id] = used + 1
+            return SelectedTaskSlot(task: task, isCommitted: isCommitted)
+        }
+    }
+    
     
     private var filteredTasks: [TaskItem] {
         tasks.filter { task in
@@ -70,7 +89,7 @@ struct MarketView: View {
                         header
                         filterPicker
                         activityGrid
-                       
+                        
                         selectedTaskGrid
                         proceedText()
                     }
@@ -79,7 +98,7 @@ struct MarketView: View {
                 }
                 
                 .scrollDisabled(true)
-    
+                
                 
                 if showingAdd {
                     addTaskPopup
@@ -89,7 +108,7 @@ struct MarketView: View {
                     warningPopup
                 }
             }
-         
+            
             .toolbar(.hidden, for: .navigationBar)
             .onAppear {
                 remainingEnergy = Int(dailyState?.currentEnergy ?? 0)
@@ -99,8 +118,6 @@ struct MarketView: View {
             }
         }
     }
-    
-
     
     
     private var addTaskPopup: some View {
@@ -140,7 +157,9 @@ struct MarketView: View {
             
             PopUpNotif(
                 onClick: {
-                    toggleSelection(for: tempTask!)
+                    if let task = tempTask {
+                        addSelection(for: task)
+                    }
                     tempTask = nil
                     showNotif = false
                 },
@@ -270,11 +289,13 @@ struct MarketView: View {
                             showingAdd = true
                         }
                         .onTapGesture {
-                            if task.isDraining && ((task.energyImpact * 10) > remainingEnergy) && !task.isPendingSelected && !task.isSelected {
+                            if task.isDraining && ((task.energyImpact * 10) > remainingEnergy){
                                 tempTask = task
                                 showNotif = true
-                            }else if !task.isSelected {
-                                toggleSelection(for: task)
+                            }else {
+                                
+                                addSelection(for: task)
+                                
                             }
                             
                         }
@@ -295,10 +316,10 @@ struct MarketView: View {
     }
     
     private var visibleRows: Int {
-           min(4, Int(ceil(Double(filteredTasks.count + 1) / 4.0)))
-       }
+        min(4, Int(ceil(Double(filteredTasks.count + 1) / 4.0)))
+    }
     
-
+    
     private var dynamicBottomPadding: CGFloat {
         switch visibleRows {
         case 3:
@@ -307,7 +328,7 @@ struct MarketView: View {
             return 90
         case 1:
             return 185
-
+            
         default:
             return -97
         }
@@ -336,20 +357,16 @@ struct MarketView: View {
                 .fill(Color(.systemBackground))
                 .shadow(color: .black, radius: 0, x: 0, y: 6)
             LazyVGrid(columns: columns, spacing: 0) {
-                ForEach(pendingSelectedTasks.reversed()) { task in
+                ForEach(pendingSelectedSlots.reversed()) { slot in
+                    let task = slot.task
                     ZStack(alignment: .topTrailing) {
                         ActivityCell(task: task)
-                            .background(task.isSelected ? .gray : .white.opacity(0.75))
+                            .background(slot.isCommitted ? Color.gray : .white.opacity(0.75))
                         
-                        if !task.isSelected{
+                        if !slot.isCommitted {
                             Button {
-                                task.isPendingSelected = false
-                                if task.isDraining {
-                                    remainingEnergy += (task.energyImpact * 10)
-                                } else {
-                                    remainingEnergy -= (task.energyImpact * 10)
-                                }
-                                try? context.save()
+                                
+                                removeOneSelection(for: task)
                             } label: {
                                 Image(systemName: "minus")
                                     .font(.system(size: 12, weight: .bold))
@@ -375,14 +392,14 @@ struct MarketView: View {
                         .border(.black, width: 0.5)
                 }
             }
-
+            
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
                     .stroke(.black, lineWidth: 1)
             )
             
-
+            
         }
         .padding(.top,100)
     }
@@ -410,49 +427,69 @@ struct MarketView: View {
     
     
     private func proceedWithSelectedTasks() {
-        let pendingObjects = Set(pendingSelectedTasks.prefix(maxSelectedTasks).map { ObjectIdentifier($0) })
+        
+        
+        let pending = Array(pendingSelectedTasks.prefix(maxSelectedTasks))
+        
+        
+        var countMap: [ObjectIdentifier: Int] = [:]
+        for task in pending {
+            let id = ObjectIdentifier(task)
+            countMap[id, default: 0] += 1
+        }
         
         for task in tasks {
-            task.isSelected = pendingObjects.contains(ObjectIdentifier(task))
-            //            task.isPendingSelected = false
+            let id = ObjectIdentifier(task)
+            if let count = countMap[id] {
+                task.isSelected = true
+                task.selectedCount = count
+            } else {
+                task.isSelected = false
+                task.selectedCount = 0
+            }
         }
         
         try? context.save()
         
         TaskReminderNotificationManager.shared.scheduleHourlyReminder(
             activeTaskTitle: nil,
-            selectedTaskCount: pendingObjects.count
+            selectedTaskCount: pending.count
         )
+        
     }
     
-    private func toggleSelection(for task: TaskItem) {
-        if task.isPendingSelected {
-            task.isPendingSelected = false
-            if task.isDraining {
-                remainingEnergy += (task.energyImpact * 10)
-            } else {
-                remainingEnergy -= (task.energyImpact * 10)
-            }
-        } else if pendingSelectedTasks.count < maxSelectedTasks {
-            task.isPendingSelected = true
-            if task.isDraining {
-                remainingEnergy -= (task.energyImpact * 10)
-            } else {
-                remainingEnergy += (task.energyImpact * 10)
-            }
-        }
-        
-        
-        
+    
+    
+    private func addSelection(for task: TaskItem) {
+        guard pendingSelectedTasks.count < maxSelectedTasks else { return }
+        task.pendingSelectionCount += 1
+        applyEnergyImpact(task: task, adding: true)
         try? context.save()
+    }
+    
+    private func removeOneSelection(for task: TaskItem) {
+        guard task.pendingSelectionCount > 0 else { return }
+        task.pendingSelectionCount -= 1
+        applyEnergyImpact(task: task, adding: false)
+        try? context.save()
+    }
+    
+    private func applyEnergyImpact(task: TaskItem, adding: Bool) {
+        let delta = task.energyImpact * 10
+        if task.isDraining {
+            remainingEnergy += adding ? -delta : delta
+        } else {
+            remainingEnergy += adding ? delta : -delta
+        }
     }
     
     private func syncPendingSelectionFromCommittedSelection() {
-        for task in tasks {
-            task.isPendingSelected = task.isSelected
-        }
         
+        for task in tasks {
+            task.pendingSelectionCount = task.selectedCount
+        }
         try? context.save()
+        
     }
     
     private func seedDefaultTasksIfNeeded() {

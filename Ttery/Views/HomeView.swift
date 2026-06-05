@@ -25,8 +25,23 @@ struct HomeView: View {
         states.first
     }
     
+    private struct SelectedTaskSlot: Identifiable {
+        let id = UUID()
+        let task: TaskItem
+    }
+
+    private var selectedTaskSlots: [SelectedTaskSlot] {
+        selectedTasks.map { SelectedTaskSlot(task: $0) }
+    }
+    
     var selectedTasks: [TaskItem] {
-        Array(tasks.filter { $0.isSelected }.prefix(maxSelectedTasks))
+        let selected = tasks.filter { $0.isSelected }
+           return Array(
+               selected.flatMap { task in
+                   Array(repeating: task, count: max(1, task.selectedCount))
+               }
+               .prefix(maxSelectedTasks)
+           )
     }
     
     private var energyValue: Double {
@@ -122,12 +137,18 @@ struct HomeView: View {
             if hasActiveTask{
                 Button {
                     if let task = activeTask {
-                        task.isSelected = false
-                        task.isPendingSelected = false
-                        try? context.save()
-                        activeTask = nil
-                        scheduleTaskReminder()
-                    }
+                           // buang satu slot saja
+                           if task.selectedCount > 1 {
+                               task.selectedCount -= 1
+                           } else {
+                               task.selectedCount = 0
+                               task.isSelected = false
+                           }
+                           task.isPendingSelected = false
+                           try? context.save()
+                           activeTask = nil
+                           scheduleTaskReminder()
+                       }
                 } label: {
                     Image(systemName: "trash")
                         .font(.system(size: 24, weight: .bold))
@@ -150,8 +171,6 @@ struct HomeView: View {
                 Button {
                     if let task = activeTask {
                         complete(task)
-                        task.isSelected = false
-                        try? context.save()
                         activeTask = nil
                     }
                 } label: {
@@ -223,9 +242,9 @@ struct HomeView: View {
                 .shadow(color: .black, radius: 0, x: 0, y: 8)
             
             LazyVGrid(columns: columns, spacing: 0) {
-                ForEach(selectedTasks.reversed()) { task in
+                ForEach(selectedTaskSlots.reversed()) { slot in
+                    let task = slot.task
                     Button {
-                        //                        complete(task)
                         if ((task.energyImpact * 10) > dailyState?.currentEnergy ?? 0) && task.isDraining {
                             showNotif = true
                             tempTask = task
@@ -306,11 +325,15 @@ struct HomeView: View {
         } else {
             state.currentEnergy += (task.energyImpact * 10)
         }
-        
-        state.currentEnergy = max(
-            0,
-            min(state.currentEnergy, state.maxEnergy)
-        )
+        state.currentEnergy = max(0, min(state.currentEnergy, state.maxEnergy))
+            
+            
+            if task.selectedCount > 1 {
+                task.selectedCount -= 1
+            } else {
+                task.selectedCount = 0
+                task.isSelected = false
+            }
         
         try? context.save()
     }
@@ -326,7 +349,6 @@ struct HomeView: View {
         }
     }
 }
-
 
 
 
