@@ -3,7 +3,6 @@
 //  Team17Project
 //
 //  Created by Muhammad Sandy Prastyo on 26/05/26.
-//
 
 import SwiftUI
 import SwiftData
@@ -21,6 +20,10 @@ struct MarketView: View {
     @State private var editingTask: TaskItem?
     @State private var tempTask: TaskItem?
     @State private var remainingEnergy: Int = 0
+    @State private var navigateToHome = false
+    @State private var navigateToMarket = false
+    @Binding var selectedTab: Tab
+
     private let maxSelectedTasks = 4
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 0), count: 4)
     
@@ -67,14 +70,16 @@ struct MarketView: View {
                         header
                         filterPicker
                         activityGrid
+                       
                         selectedTaskGrid
                         proceedText()
                     }
                     .padding(.horizontal, 24)
                     .padding(.top, 18)
-                    .padding(.bottom, 100)
                 }
+                
                 .scrollDisabled(true)
+    
                 
                 if showingAdd {
                     addTaskPopup
@@ -84,6 +89,7 @@ struct MarketView: View {
                     warningPopup
                 }
             }
+         
             .toolbar(.hidden, for: .navigationBar)
             .onAppear {
                 remainingEnergy = Int(dailyState?.currentEnergy ?? 0)
@@ -93,6 +99,9 @@ struct MarketView: View {
             }
         }
     }
+    
+
+    
     
     private var addTaskPopup: some View {
         ZStack {
@@ -273,24 +282,36 @@ struct MarketView: View {
                 }
                 
             }
+            
             .frame(height: CGFloat(visibleRows) * 94)
             .scrollBounceBehavior(.basedOnSize)
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
                     .stroke(.black, lineWidth: 1)
-                
             )
         }
+        .padding(.bottom, dynamicBottomPadding)
     }
     
     private var visibleRows: Int {
            min(4, Int(ceil(Double(filteredTasks.count + 1) / 4.0)))
        }
     
-//    private var emptyActivitySlotCount: Int {
-//        max(0, maxSelectedTasks - pendingSelectedTasks.count)
-//    }
+
+    private var dynamicBottomPadding: CGFloat {
+        switch visibleRows {
+        case 3:
+            return -10
+        case 2:
+            return 90
+        case 1:
+            return 185
+
+        default:
+            return -97
+        }
+    }
     
     private var addTaskButton: some View {
         Button {
@@ -354,14 +375,16 @@ struct MarketView: View {
                         .border(.black, width: 0.5)
                 }
             }
+
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
                     .stroke(.black, lineWidth: 1)
             )
             
-            .padding(.top, 8)
+
         }
+        .padding(.top,100)
     }
     
     private var emptySelectedSlotCount: Int {
@@ -371,6 +394,8 @@ struct MarketView: View {
     private func proceedText() -> some View {
         Button {
             proceedWithSelectedTasks()
+            selectedTab = .home
+            
         } label: {
             Text("\(pendingSelectedTasks.count)/\(maxSelectedTasks) tasks selected. proceed?")
                 .font(.system(size: 13))
@@ -382,6 +407,7 @@ struct MarketView: View {
         .buttonStyle(.plain)
         .disabled(pendingSelectedTasks.isEmpty)
     }
+    
     
     private func proceedWithSelectedTasks() {
         let pendingObjects = Set(pendingSelectedTasks.prefix(maxSelectedTasks).map { ObjectIdentifier($0) })
@@ -483,7 +509,7 @@ private enum EnergyFilter: CaseIterable, Hashable {
         container.mainContext.insert(task)
     }
     
-    return MarketView()
+    return MarketView(selectedTab: .constant(.market))
         .modelContainer(container)
     //    MarketView()
     //        .modelContainer(for: [TaskItem.self, DailyState.self], inMemory: true)

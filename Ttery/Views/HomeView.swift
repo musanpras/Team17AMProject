@@ -118,8 +118,6 @@ struct HomeView: View {
     }
     
     private var header: some View {
-        
-        
         HStack{
             if hasActiveTask{
                 Button {
@@ -268,7 +266,7 @@ struct HomeView: View {
                 RoundedRectangle(cornerRadius: 12)
                     .stroke(.black, lineWidth: 1)
             )
-            .padding(.top, 6)
+            .padding(.top, 10)
         }
     }
     

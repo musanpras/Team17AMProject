@@ -21,7 +21,7 @@ struct MainTabView: View {
                     HomeView()
                         .tag(Tab.home)
 
-                    MarketView()
+                    MarketView(selectedTab: $selectedTab)
                         .tag(Tab.market)
                 }
                 .toolbarVisibility(.hidden, for: .tabBar)
