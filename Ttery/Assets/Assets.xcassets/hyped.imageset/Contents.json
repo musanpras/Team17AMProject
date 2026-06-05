@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "hyped.png",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
