@@ -17,6 +17,9 @@ class TaskItem {
     var icon: String
     var isSelected: Bool
     var isPendingSelected: Bool = false
+    var pendingSelectionCount: Int = 0
+    var selectedCount: Int = 0
+    
 
     init(
         title: String,
@@ -24,7 +27,9 @@ class TaskItem {
         isDraining: Bool,
         icon: String,
         isSelected: Bool = false,
-        isPendingSelected: Bool = false
+        isPendingSelected: Bool = false,
+        pendingSelectionCount: Int = 0,
+        selectedCount: Int = 0
     ) {
         self.title = title
         self.energyImpact = energyImpact
@@ -32,5 +37,7 @@ class TaskItem {
         self.icon = icon
         self.isSelected = isSelected
         self.isPendingSelected = isPendingSelected
+        self.pendingSelectionCount = pendingSelectionCount
+        self.selectedCount = selectedCount
     }
 }
