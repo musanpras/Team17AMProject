@@ -270,10 +270,10 @@ struct MarketView: View {
                             showingAdd = true
                         }
                         .onTapGesture {
-                            if task.isDraining && ((task.energyImpact * 10) > remainingEnergy) && !task.isPendingSelected {
+                            if task.isDraining && ((task.energyImpact * 10) > remainingEnergy) && !task.isPendingSelected && !task.isSelected {
                                 tempTask = task
                                 showNotif = true
-                            }else {
+                            }else if !task.isSelected {
                                 toggleSelection(for: task)
                             }
                             
