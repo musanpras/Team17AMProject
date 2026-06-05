@@ -107,7 +107,9 @@ struct AddTaskView: View {
     
     private var inputPanel: some View {
         VStack(spacing: 10) {
-            TextField("activity", text: $title)
+            TextField("", text: $title, prompt: Text("activity")
+                .foregroundStyle(.gray)
+                .font(.body))
                 .font(.system(size: 20, weight: .semibold))
                 .textInputAutocapitalization(.never)
                 .foregroundStyle(.black)
@@ -124,7 +126,7 @@ struct AddTaskView: View {
         .padding(.vertical, 14)
         .background(
             RoundedRectangle(cornerRadius: 24)
-                .fill(Color(.systemGray6))
+                .fill(Color.fixedGray6)
         )
     }
     
@@ -141,11 +143,8 @@ struct AddTaskView: View {
                             .foregroundStyle(energy == 1 ? .gray : .black)
                     }
             ForEach(1...energy, id: \.self) {_ in
-                if isDraining {
-                    Image(systemName: "arrowshape.down.fill")
-                } else {
-                    Image(systemName: "arrowshape.up")
-                }
+                Image(systemName: isDraining ? "arrowshape.down.fill" : "arrowshape.up")
+                    .foregroundStyle(.black)
                 
             }
             Button(action: {
@@ -170,7 +169,7 @@ struct AddTaskView: View {
                 .textInputAutocapitalization(.never)
                 .disableAutocorrection(true)
                 .frame(width: 36, height: 36)
-                .background(Circle().fill(Color(.systemGray6)))
+                .background(Circle().fill(Color.fixedGray6))
                 .onChange(of: icon) { _, newValue in
                     icon = sanitizedIcon(from: newValue)
                 }

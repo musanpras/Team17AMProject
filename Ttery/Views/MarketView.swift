@@ -79,10 +79,7 @@ struct MarketView: View {
         NavigationStack {
             
             ZStack {
-                Image("backgroundImage")
-                    .resizable()
-                    .padding(.top, 10)
-                    .ignoresSafeArea()
+                CodedGridBackground()
                 
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
@@ -113,7 +110,7 @@ struct MarketView: View {
             .onAppear {
                 remainingEnergy = Int(dailyState?.currentEnergy ?? 0)
                 createStateIfNeeded()
-                seedDefaultTasksIfNeeded()
+//                seedDefaultTasksIfNeeded()
                 syncPendingSelectionFromCommittedSelection()
             }
         }
@@ -246,7 +243,7 @@ struct MarketView: View {
         .padding(4)
         .background(
             RoundedRectangle(cornerRadius: 28)
-                .fill(Color(.systemGray6))
+                .fill(Color.fixedGray6)
                 .shadow(color: .black, radius: 0, x: 0, y: 5)
         )
         .overlay(
@@ -258,7 +255,7 @@ struct MarketView: View {
     private var activityGrid: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 16)
-                .fill(Color(.systemBackground))
+                .fill(.white)
                 .shadow(color: .black, radius: 0, x: 0, y: 6)
             
             ScrollView{
@@ -306,9 +303,9 @@ struct MarketView: View {
             
             .frame(height: CGFloat(visibleRows) * 94)
             .scrollBounceBehavior(.basedOnSize)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .clipShape(RoundedRectangle(cornerRadius: 16))
             .overlay(
-                RoundedRectangle(cornerRadius: 12)
+                RoundedRectangle(cornerRadius: 16)
                     .stroke(.black, lineWidth: 1)
             )
         }
@@ -354,7 +351,7 @@ struct MarketView: View {
     private var selectedTaskGrid: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 16)
-                .fill(Color(.systemBackground))
+                .fill(.white)
                 .shadow(color: .black, radius: 0, x: 0, y: 6)
             LazyVGrid(columns: columns, spacing: 0) {
                 ForEach(pendingSelectedSlots.reversed()) { slot in
@@ -392,10 +389,9 @@ struct MarketView: View {
                         .border(.black, width: 0.5)
                 }
             }
-            
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .clipShape(RoundedRectangle(cornerRadius: 16))
             .overlay(
-                RoundedRectangle(cornerRadius: 12)
+                RoundedRectangle(cornerRadius: 16)
                     .stroke(.black, lineWidth: 1)
             )
             
@@ -492,15 +488,15 @@ struct MarketView: View {
         
     }
     
-    private func seedDefaultTasksIfNeeded() {
-        guard tasks.isEmpty else { return }
-        
-        for task in TaskItem.defaultTasks {
-            context.insert(task)
-        }
-        
-        try? context.save()
-    }
+//    private func seedDefaultTasksIfNeeded() {
+//        guard tasks.isEmpty else { return }
+//        
+//        for task in TaskItem.defaultTasks {
+//            context.insert(task)
+//        }
+//        
+//        try? context.save()
+//    }
     
     private func createStateIfNeeded() {
         if states.isEmpty {
