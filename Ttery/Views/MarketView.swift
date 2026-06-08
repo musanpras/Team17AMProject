@@ -14,6 +14,7 @@ struct MarketView: View {
     @Query private var states: [DailyState]
     
     @State private var viewModel = MarketViewModel()
+    @State private var pressedTask: TaskItem?
     
     @Binding var selectedTab: Tab
     
@@ -58,7 +59,7 @@ struct MarketView: View {
                 viewModel.states = states
                 viewModel.initializeEnergy()
                 viewModel.createStateIfNeeded()
-//                seedDefaultTasksIfNeeded()
+                //                seedDefaultTasksIfNeeded()
                 viewModel.syncPendingSelectionFromCommittedSelection()
             }
             .onChange(of: tasks.count) { _, _ in
@@ -226,7 +227,20 @@ struct MarketView: View {
                                 .offset(x: 30, y: -35)
                             }
                         }
-                        .onLongPressGesture(minimumDuration: 0.8) {
+                        .scaleEffect(pressedTask?.id == task.id ? 1.03 : 1)
+                        .offset(y: pressedTask?.id == task.id ? -4 : 0)
+                        .shadow(
+                            color: .black.opacity(pressedTask?.id == task.id ? 0.15 : 0),
+                            radius: pressedTask?.id == task.id ? 8 : 0
+                        )
+                        .zIndex(pressedTask?.id == task.id ? 1 : 0)
+                        .animation(.snappy(duration: 0.2), value: pressedTask?.id)
+                        
+                        .onLongPressGesture(minimumDuration: 0.8,
+                                            pressing: { pressing in
+                            pressedTask = pressing ? task : nil
+                        }
+                        ) {
                             viewModel.openEditTask(task)
                         }
                         .onTapGesture {

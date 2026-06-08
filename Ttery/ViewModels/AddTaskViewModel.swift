@@ -2,29 +2,21 @@
 //  AddTaskViewModel.swift
 //  Ttery
 //
-//  Created during MVVM refactoring.
-//  Handles form state, validation, and CRUD for AddTaskView.
-//
-
 import SwiftUI
 import SwiftData
 
 @Observable
 class AddTaskViewModel {
-    
-    // MARK: - Form State
+
     var title = ""
     var energy = 1
     var isDraining = false
     var icon = "🔋"
     
-    // MARK: - Data
     private(set) var task: TaskItem?
     
-    // MARK: - Context (injected by View)
     var context: ModelContext?
     
-    // MARK: - Computed Properties
     
     var isEditing: Bool {
         task != nil
@@ -39,13 +31,11 @@ class AddTaskViewModel {
         isDraining ? "draining" : "energizing"
     }
     
-    // MARK: - Init
     
     init(task: TaskItem? = nil) {
         self.task = task
     }
     
-    // MARK: - Methods
 
     func loadTaskIfNeeded() {
         guard let task else { return }
@@ -56,7 +46,7 @@ class AddTaskViewModel {
         icon = task.icon
     }
     
-    /// Handles title character limit (max 12 characters)
+    
     func handleTitleChange(_ newValue: String) {
         if newValue.count > 12 {
             title = String(newValue.prefix(12))
@@ -64,12 +54,12 @@ class AddTaskViewModel {
         }
     }
     
-    /// Sanitizes icon input to only allow emoji characters
+
     func handleIconChange(_ newValue: String) {
         icon = sanitizedIcon(from: newValue)
     }
     
-    /// Updates icon when draining toggle changes
+    
     func handleDrainingChange(_ newValue: Bool) {
         icon = newValue ? "🪫" : "🔋"
         

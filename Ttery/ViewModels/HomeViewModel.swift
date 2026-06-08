@@ -2,9 +2,7 @@
 //  HomeViewModel.swift
 //  Ttery
 //
-//  Created during MVVM refactoring.
-//  Handles state management and business logic for HomeView.
-//
+
 
 import SwiftUI
 import SwiftData
@@ -12,28 +10,28 @@ import SwiftData
 @Observable
 class HomeViewModel {
     
-    // MARK: - State
+    
     var activeTask: TaskItem? = nil
     var tempTask: TaskItem? = nil
     var showNotif: Bool = false
     
-    // MARK: - Data (set by View from @Query)
+    
     var tasks: [TaskItem] = []
     var states: [DailyState] = []
     
-    // MARK: - Context (injected by View)
+    
     var context: ModelContext?
     
-    // MARK: - Constants
+    
     let maxSelectedTasks = 4
     
-    // MARK: - Nested Types
+    
     struct SelectedTaskSlot: Identifiable {
         let id = UUID()
         let task: TaskItem
     }
     
-    // MARK: - Computed Properties
+    
     
     var dailyState: DailyState? {
         states.first
@@ -85,7 +83,7 @@ class HomeViewModel {
         max(0, maxSelectedTasks - selectedTasks.count)
     }
     
-    // MARK: - Methods
+    
     
     func scheduleTaskReminder() {
         TaskReminderNotificationManager.shared.scheduleHourlyReminder(
@@ -128,7 +126,7 @@ class HomeViewModel {
         }
     }
     
-    /// Removes the active task from selected slots (trash button action)
+
     func deleteActiveTask() {
         if let task = activeTask {
                // buang satu slot saja
@@ -145,7 +143,7 @@ class HomeViewModel {
            }
     }
     
-    /// Completes the active task (checkmark button action)
+    
     func completeActiveTask() {
         if let task = activeTask {
             complete(task)
@@ -153,7 +151,7 @@ class HomeViewModel {
         }
     }
     
-    /// Handles task selection from the grid, showing warning if energy is insufficient
+    
     func handleTaskSelection(_ task: TaskItem) {
         if ((task.energyImpact * 10) > dailyState?.currentEnergy ?? 0) && task.isDraining {
             showNotif = true
@@ -163,20 +161,20 @@ class HomeViewModel {
         }
     }
     
-    /// Confirms the warning popup and sets the active task
+    
     func confirmWarningAndSetActive() {
         activeTask = tempTask
         tempTask = nil
         showNotif = false
     }
     
-    /// Cancels the warning popup
-    /// NOTE: tempTask is intentionally NOT cleared on cancel, preserving original behavior
+    
+    
     func cancelWarning() {
         showNotif = false
     }
     
-    /// Checks if a task exceeds the current available energy
+    
     func isTaskOverEnergy(_ task: TaskItem) -> Bool {
         task.isDraining && ((task.energyImpact * 10) > dailyState?.currentEnergy ?? 0)
     }

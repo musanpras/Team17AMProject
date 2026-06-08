@@ -2,9 +2,7 @@
 //  MarketViewModel.swift
 //  Ttery
 //
-//  Created during MVVM refactoring.
-//  Handles state management and business logic for MarketView.
-//
+
 
 import SwiftUI
 import SwiftData
@@ -12,7 +10,6 @@ import SwiftData
 @Observable
 class MarketViewModel {
     
-    // MARK: - State
     var showingAdd: Bool = false
     var showNotif: Bool = false
     var selectedFilter: EnergyFilter = .energizing
@@ -20,24 +17,19 @@ class MarketViewModel {
     var tempTask: TaskItem? = nil
     var remainingEnergy: Int = 0
     
-    // MARK: - Data (set by View from @Query)
     var tasks: [TaskItem] = []
     var states: [DailyState] = []
     
-    // MARK: - Context (injected by View)
     var context: ModelContext?
     
-    // MARK: - Constants
     let maxSelectedTasks = 4
     
-    // MARK: - Nested Types
     struct SelectedTaskSlot: Identifiable {
         let id = UUID()
         let task: TaskItem
         let isCommitted: Bool
     }
     
-    // MARK: - Computed Properties
     
     var dailyState: DailyState? {
         states.first
@@ -102,9 +94,6 @@ class MarketViewModel {
         }
     }
     
-    // MARK: - Methods
-    
-    /// Initializes remainingEnergy from the persisted daily state
     func initializeEnergy() {
         remainingEnergy = Int(dailyState?.currentEnergy ?? 0)
     }
@@ -173,16 +162,6 @@ class MarketViewModel {
         
     }
     
-//    private func seedDefaultTasksIfNeeded() {
-//        guard tasks.isEmpty else { return }
-//        
-//        for task in TaskItem.defaultTasks {
-//            context.insert(task)
-//        }
-//        
-//        try? context.save()
-//    }
-    
     func createStateIfNeeded() {
         guard let context else { return }
         if states.isEmpty {
@@ -192,7 +171,6 @@ class MarketViewModel {
         }
     }
     
-    /// Handles a task tap in the activity grid
     func handleTaskTap(_ task: TaskItem) {
         if task.isDraining && ((task.energyImpact * 10) > remainingEnergy){
             tempTask = task
@@ -204,13 +182,11 @@ class MarketViewModel {
         }
     }
     
-    /// Shows warning for a specific task (exclamation icon button)
     func showWarningForTask(_ task: TaskItem) {
         tempTask = task
         showNotif = true
     }
     
-    /// Confirms the warning and adds the task selection
     func handleWarningConfirm() {
         if let task = tempTask {
             addSelection(for: task)
@@ -218,32 +194,27 @@ class MarketViewModel {
         tempTask = nil
         showNotif = false
     }
-    
-    /// Cancels the warning popup
+
     func handleWarningCancel() {
         tempTask = nil
         showNotif = false
     }
     
-    /// Opens the add task popup
     func openAddTask() {
         editingTask = nil
         showingAdd = true
     }
     
-    /// Opens the edit task popup for a specific task
     func openEditTask(_ task: TaskItem) {
         editingTask = task
         showingAdd = true
     }
     
-    /// Closes the add/edit task popup
     func closeAddTask() {
         editingTask = nil
         showingAdd = false
     }
     
-    /// Checks if a task exceeds the remaining energy
     func isTaskOverEnergy(_ task: TaskItem) -> Bool {
         task.isDraining && ((task.energyImpact * 10) > remainingEnergy)
     }
