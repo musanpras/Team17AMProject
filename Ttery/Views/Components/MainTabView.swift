@@ -13,23 +13,26 @@ struct MainTabView: View {
 
         var body: some View {
 
-            ZStack(alignment: .bottom) {
-
-                // Main content
-                TabView(selection: $selectedTab) {
-
-                    HomeView()
-                        .tag(Tab.home)
-
-                    MarketView(selectedTab: $selectedTab)
-                        .tag(Tab.market)
+            NavigationStack {
+                ZStack(alignment: .bottom) {
+                    
+                    // Main content
+                    TabView(selection: $selectedTab) {
+                        
+                        HomeView()
+                            .tag(Tab.home)
+                        
+                        MarketView(selectedTab: $selectedTab)
+                            .tag(Tab.market)
+                    }
+                    
+                    // Custom tab view
+                    
+                    CustomTabView(selectedTab: $selectedTab)
+                    
                 }
-                .toolbarVisibility(.hidden, for: .tabBar)
-                // Custom tab view
-                CustomTabView(selectedTab: $selectedTab)
-                
+                .ignoresSafeArea(.keyboard, edges: .bottom)
             }
-            .ignoresSafeArea(.keyboard, edges: .bottom)
         }
 }
 
