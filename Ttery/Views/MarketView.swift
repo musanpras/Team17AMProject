@@ -21,6 +21,8 @@ struct MarketView: View {
     @State private var tempTask: TaskItem?
     @State private var remainingEnergy: Int = 0
     
+    @State private var pressedTask: TaskItem?
+    
     @Binding var selectedTab: Tab
     
     private let maxSelectedTasks = 4
@@ -142,7 +144,6 @@ struct MarketView: View {
             .frame(maxWidth: 660)
             .padding(.horizontal, 18)
         }
-        .transition(.opacity.combined(with: .scale(scale: 0.96)))
         .zIndex(10)
     }
     
@@ -201,7 +202,7 @@ struct MarketView: View {
                             bottomTrailingRadius: 8,
                             topTrailingRadius: 8
                         )
-                            .fill(.black)
+                        .fill(.black)
                         
                         UnevenRoundedRectangle(
                             topLeadingRadius: 0,
@@ -209,8 +210,8 @@ struct MarketView: View {
                             bottomTrailingRadius: 8,
                             topTrailingRadius: 8
                         )
-                            .fill(.black)
-                            .offset(y: 2)
+                        .fill(.black)
+                        .offset(y: 2)
                         
                         UnevenRoundedRectangle(
                             topLeadingRadius: 0,
@@ -218,8 +219,8 @@ struct MarketView: View {
                             bottomTrailingRadius: 8,
                             topTrailingRadius: 8
                         )
-                            .fill(energyColor)
-                            .frame(width: proxy.size.width * min(max(energyValue, 0), 1))
+                        .fill(energyColor)
+                        .frame(width: proxy.size.width * min(max(energyValue, 0), 1))
                     }
                 }
                 .frame(width: 100, height: 20)
@@ -304,7 +305,20 @@ struct MarketView: View {
                                 .offset(x: 30, y: -35)
                             }
                         }
-                        .onLongPressGesture(minimumDuration: 0.8) {
+                        .scaleEffect(pressedTask?.id == task.id ? 1.03 : 1)
+                        .offset(y: pressedTask?.id == task.id ? -4 : 0)
+                        .shadow(
+                            color: .black.opacity(pressedTask?.id == task.id ? 0.15 : 0),
+                            radius: pressedTask?.id == task.id ? 8 : 0
+                        )
+                        .zIndex(pressedTask?.id == task.id ? 1 : 0)
+                        .animation(.snappy(duration: 0.2), value: pressedTask?.id)
+                        
+                        .onLongPressGesture(minimumDuration: 0.5,
+                                            pressing: { pressing in
+                            pressedTask = pressing ? task : nil
+                        }
+                        ) {
                             editingTask = task
                             showingAdd = true
                         }
