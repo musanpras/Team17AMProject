@@ -75,9 +75,7 @@ struct MarketView: View {
     }
     
     var body: some View {
-        
         NavigationStack {
-            
             ZStack {
                 CodedGridBackground()
                 
@@ -87,13 +85,18 @@ struct MarketView: View {
                         filterPicker
                         activityGrid
                         
-                        selectedTaskGrid
-                        proceedText()
                     }
                     .padding(.horizontal, 24)
                     .padding(.top, 18)
                 }
-                
+                .safeAreaInset(edge: .bottom) {
+                    VStack(spacing: 16){
+                        selectedTaskGrid
+                        proceedText()
+                    }
+                    .padding(.horizontal, 24)
+                    .offset(x: 0, y: -60)
+                }
                 .scrollDisabled(true)
                 
                 
@@ -110,7 +113,6 @@ struct MarketView: View {
             .onAppear {
                 remainingEnergy = Int(dailyState?.currentEnergy ?? 0)
                 createStateIfNeeded()
-//                seedDefaultTasksIfNeeded()
                 syncPendingSelectionFromCommittedSelection()
             }
         }
@@ -189,23 +191,44 @@ struct MarketView: View {
                     .background(Circle().fill(.white).shadow(color: .black, radius: 0, x: 0, y: 2))
                     .overlay(Circle().stroke(.black, lineWidth: 2))
                     .zIndex(1)
-                    .offset(x: 16)
+                    .offset(x: 6)
                 
                 GeometryReader { proxy in
                     ZStack(alignment: .leading) {
-                        Capsule()
+                        UnevenRoundedRectangle(
+                            topLeadingRadius: 0,
+                            bottomLeadingRadius: 0,
+                            bottomTrailingRadius: 8,
+                            topTrailingRadius: 8
+                        )
                             .fill(.black)
-                        Capsule()
+                        
+                        UnevenRoundedRectangle(
+                            topLeadingRadius: 0,
+                            bottomLeadingRadius: 0,
+                            bottomTrailingRadius: 8,
+                            topTrailingRadius: 8
+                        )
                             .fill(.black)
                             .offset(y: 2)
                         
-                        Capsule()
+                        UnevenRoundedRectangle(
+                            topLeadingRadius: 0,
+                            bottomLeadingRadius: 0,
+                            bottomTrailingRadius: 8,
+                            topTrailingRadius: 8
+                        )
                             .fill(energyColor)
                             .frame(width: proxy.size.width * min(max(energyValue, 0), 1))
                     }
                 }
                 .frame(width: 100, height: 20)
-                .overlay(Capsule().stroke(.black, lineWidth: 1))
+                .overlay(UnevenRoundedRectangle(
+                    topLeadingRadius: 0,
+                    bottomLeadingRadius: 0,
+                    bottomTrailingRadius: 8,
+                    topTrailingRadius: 8
+                ).stroke(.black, lineWidth: 1))
                 
             }
         }
@@ -300,7 +323,6 @@ struct MarketView: View {
                 }
                 
             }
-            
             .frame(height: CGFloat(visibleRows) * 94)
             .scrollBounceBehavior(.basedOnSize)
             .clipShape(RoundedRectangle(cornerRadius: 16))
@@ -353,6 +375,7 @@ struct MarketView: View {
             RoundedRectangle(cornerRadius: 16)
                 .fill(.white)
                 .shadow(color: .black, radius: 0, x: 0, y: 6)
+            
             LazyVGrid(columns: columns, spacing: 0) {
                 ForEach(pendingSelectedSlots.reversed()) { slot in
                     let task = slot.task
@@ -397,7 +420,7 @@ struct MarketView: View {
             
             
         }
-        .padding(.top,100)
+        .frame(height: 96)
     }
     
     private var emptySelectedSlotCount: Int {
@@ -411,11 +434,10 @@ struct MarketView: View {
             
         } label: {
             Text("\(pendingSelectedTasks.count)/\(maxSelectedTasks) tasks selected. proceed?")
-                .font(.system(size: 13))
+                .font(.system(size: 14))
                 .underline()
                 .foregroundStyle(.black)
                 .frame(maxWidth: .infinity)
-                .padding(.top, 4)
         }
         .buttonStyle(.plain)
         .disabled(pendingSelectedTasks.isEmpty)
@@ -488,15 +510,6 @@ struct MarketView: View {
         
     }
     
-//    private func seedDefaultTasksIfNeeded() {
-//        guard tasks.isEmpty else { return }
-//        
-//        for task in TaskItem.defaultTasks {
-//            context.insert(task)
-//        }
-//        
-//        try? context.save()
-//    }
     
     private func createStateIfNeeded() {
         if states.isEmpty {

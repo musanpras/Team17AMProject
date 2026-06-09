@@ -74,16 +74,22 @@ struct HomeView: View {
                 CodedGridBackground()
                 
                 ScrollView {
-                    VStack(spacing: 20) {
+                    VStack(spacing: 16) {
                         header
                         mascotSection
                         energyBar
+                    }
+                    .padding(.horizontal, 24)
+                    .padding(.top, 18)
+                }
+                .safeAreaInset(edge: .bottom) {
+                    VStack(spacing: 16){
                         selectedTaskGrid
                         tteryInfo
                     }
-                    .padding(.horizontal, 30)
-                    .padding(.top, 36)
-                    .padding(.bottom, 110)
+                    .edgesIgnoringSafeArea(.bottom)
+                    .padding(.horizontal, 24)
+                    .offset(x: 0, y: -60)
                 }
                 .scrollDisabled(true)
                 
@@ -159,7 +165,7 @@ struct HomeView: View {
             }
             
             VStack(spacing: 8) {
-                Text(activeTask != nil ? activeTask!.title : "pick a task.")
+                Text(activeTask != nil ? "\(activeTask!.title)." : "pick a task.")
                     .font(.system(size: 32, weight: .bold))
                     .foregroundStyle(.black)
             }
@@ -211,23 +217,44 @@ struct HomeView: View {
                 .overlay(Circle().stroke(.black, lineWidth: 2))
                 .background(Circle().fill(.white).shadow(color: .black, radius: 0, x: 0, y: 4))
                 .zIndex(1)
-            .offset(x: 16)
+            .offset(x: 8)
             
             GeometryReader { proxy in
                 ZStack(alignment: .leading) {
-                    Capsule()
+                    UnevenRoundedRectangle(
+                        topLeadingRadius: 0,
+                        bottomLeadingRadius: 0,
+                        bottomTrailingRadius: 16,
+                        topTrailingRadius: 16
+                    )
                         .fill(.black)
                     
-                    Capsule()
+                    UnevenRoundedRectangle(
+                        topLeadingRadius: 0,
+                        bottomLeadingRadius: 0,
+                        bottomTrailingRadius: 16,
+                        topTrailingRadius: 16
+                    )
                         .fill(.black)
                         .offset(y: 3)
-                    Capsule()
+                    
+                    UnevenRoundedRectangle(
+                        topLeadingRadius: 0,
+                        bottomLeadingRadius: 0,
+                        bottomTrailingRadius: 16,
+                        topTrailingRadius: 16
+                    )
                         .fill(energyColor)
                         .frame(width: proxy.size.width * min(max(energyValue, 0), 1))
                 }
             }
             .frame(width: 160, height: 32)
-            .overlay(Capsule().stroke(.black, lineWidth: 1))
+            .overlay(UnevenRoundedRectangle(
+                topLeadingRadius: 0,
+                bottomLeadingRadius: 0,
+                bottomTrailingRadius: 16,
+                topTrailingRadius: 16
+            ).stroke(.black, lineWidth: 1))
         }
         .frame(maxWidth: .infinity)
     }
@@ -237,39 +264,36 @@ struct HomeView: View {
             RoundedRectangle(cornerRadius: 16)
                 .fill(.white)
                 .shadow(color: .black, radius: 0, x: 0, y: 6)
-                .padding(.top, 16)
             
             LazyVGrid(columns: columns, spacing: 0) {
-                ForEach(selectedTaskSlots.reversed()) { slot in
+                ForEach(selectedTaskSlots.reversed() ) {    slot in
                     let task = slot.task
-                    Button {
+                    
+                    ZStack(alignment: .topTrailing) {
+                        ActivityCell(task: task)
+                        
+                        if task.isDraining && ((task.energyImpact * 10) > dailyState?.currentEnergy ?? 0){
+                            Button {
+                                showNotif = true
+                            } label: {
+                                Image(systemName: "exclamationmark")
+                                    .font(.system(size: 12, weight: .bold))
+                                    .foregroundStyle(.white)
+                                    .frame(width: 18, height: 18)
+                                    .background(Circle().fill(.yellow))
+                            }
+                            .buttonStyle(.plain)
+                            .offset(x: 30, y: -35)
+                        }
+                    }
+                    .onTapGesture {
                         if ((task.energyImpact * 10) > dailyState?.currentEnergy ?? 0) && task.isDraining {
                             showNotif = true
                             tempTask = task
                         } else {
                             activeTask = task
                         }
-                    } label: {
-                        ZStack {
-                            ActivityCell(task: task)
-                            
-                            
-                            if task.isDraining && ((task.energyImpact * 10) > dailyState?.currentEnergy ?? 0){
-                                Button {
-                                    showNotif = true
-                                } label: {
-                                    Image(systemName: "exclamationmark")
-                                        .font(.system(size: 12, weight: .bold))
-                                        .foregroundStyle(.white)
-                                        .frame(width: 18, height: 18)
-                                        .background(Circle().fill(.yellow))
-                                }
-                                .buttonStyle(.plain)
-                                .offset(x: 30, y: -35)
-                            }
-                        }
                     }
-                    .buttonStyle(.plain)
                 }
                 
                 ForEach(0..<emptySelectedSlotCount, id: \.self) { _ in
@@ -283,8 +307,8 @@ struct HomeView: View {
                 RoundedRectangle(cornerRadius: 16)
                     .stroke(.black, lineWidth: 1)
             )
-            .padding(.top, 16)
         }
+        .frame(height: 96)
     }
     
     private var tteryInfo: some View {
@@ -297,6 +321,7 @@ struct HomeView: View {
                 .foregroundStyle(.black)
         }
         .foregroundColor(.primary)
+        
     }
     
     private var hasActiveTask: Bool {

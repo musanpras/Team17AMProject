@@ -78,7 +78,6 @@ struct CustomTabView: View {
                 selectedTab = tab
             }
         } label: {
-
             VStack(spacing: 6) {
 
                 if unactiveimage != "" {

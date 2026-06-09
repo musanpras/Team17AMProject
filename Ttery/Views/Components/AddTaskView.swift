@@ -193,6 +193,7 @@ struct AddTaskView: View {
         }
         .padding(.horizontal, 6)
         .onChange(of: isDraining){_, newValue in
+            guard icon.isEmpty else { return }
             icon = newValue ? "🪫" : "🔋"
             
         }

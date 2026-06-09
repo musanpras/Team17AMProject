@@ -14,6 +14,8 @@ final class TaskReminderNotificationManager: NSObject, UNUserNotificationCenterD
     private let reminderIdentifier = "hourly-task-reminder"
     private let notificationCenter = UNUserNotificationCenter.current()
     
+    let number: Int = Int.random(in: 1...2)
+    
     private override init() {
         super.init()
         notificationCenter.delegate = self
@@ -30,14 +32,14 @@ final class TaskReminderNotificationManager: NSObject, UNUserNotificationCenterD
         content.sound = .default
         
         if let activeTaskTitle, !activeTaskTitle.isEmpty {
-            content.title = "Keep going"
-            content.body = "You're working on \(activeTaskTitle). Take a moment to check your energy."
+            content.title = "just checking in..."
+            content.body = "done with \(activeTaskTitle) yet?"
         } else if selectedTaskCount > 0 {
-            content.title = "Ready for your next task?"
-            content.body = "You have \(selectedTaskCount) task\(selectedTaskCount == 1 ? "" : "s") waiting in your list."
+            content.title = "yo, it's ttery!"
+            content.body = "i'm bored, let's do something"
         } else {
-            content.title = "Pick a task"
-            content.body = "Your task list is empty. Add or choose something small to start."
+            content.title = number == 1 ? "ttery here." : "ttery says hello"
+            content.body = number == 1 ? "what's been up this past hour?" : "how are you doing?"
         }
         
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 3600, repeats: true)
