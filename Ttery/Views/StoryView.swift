@@ -17,6 +17,7 @@ struct StoryView: View {
             VStack(spacing: 0) {
                 HStack(spacing: 0) {
                     Button {
+                        Haptic.medium()
                         dismiss()
                     } label: {
                         Image(systemName: "chevron.left")

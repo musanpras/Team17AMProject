@@ -74,6 +74,7 @@ struct CustomTabView: View {
     ) -> some View {
 
         Button {
+            Haptic.medium()
             withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
                 selectedTab = tab
             }

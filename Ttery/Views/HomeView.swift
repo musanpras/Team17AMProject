@@ -139,6 +139,7 @@ struct HomeView: View {
         HStack{
             if hasActiveTask{
                 Button {
+                    Haptic.medium()
                     if let task = activeTask {
                            // buang satu slot saja
                            if task.selectedCount > 1 {
@@ -172,6 +173,7 @@ struct HomeView: View {
             .frame(maxWidth: .infinity)
             if hasActiveTask{
                 Button {
+                    Haptic.medium()
                     if let task = activeTask {
                         complete(task)
                         activeTask = nil
@@ -287,6 +289,8 @@ struct HomeView: View {
                         }
                     }
                     .onTapGesture {
+                        Haptic.selection()
+                        
                         if ((task.energyImpact * 10) > dailyState?.currentEnergy ?? 0) && task.isDraining {
                             showNotif = true
                             tempTask = task
@@ -314,6 +318,9 @@ struct HomeView: View {
     private var tteryInfo: some View {
         NavigationLink {
             StoryView()
+                .onAppear {
+                    Haptic.light()
+                }
         } label: {
             Text("who’s ttery?")
                 .font(.system(size: 14))
