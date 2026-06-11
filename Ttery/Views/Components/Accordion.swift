@@ -39,6 +39,7 @@ struct AccordionItem: View {
             }
             
             Button {
+                Haptic.medium()
                 withAnimation(.easeInOut(duration: 0.25)) {
                     isExpanded.toggle()
                 }

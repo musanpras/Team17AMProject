@@ -133,6 +133,7 @@ struct AddTaskView: View {
     private var energyPanel: some View {
         HStack{
             Button(action: {
+                Haptic.light()
                 if energy > 1 {
                     energy -= 1
                 }
@@ -148,6 +149,7 @@ struct AddTaskView: View {
                 
             }
             Button(action: {
+                Haptic.light()
                 if energy < 4 {
                     energy += 1
                 }
@@ -201,6 +203,7 @@ struct AddTaskView: View {
     
     private var saveButton: some View {
         Button {
+            Haptic.light()
             saveTask()
         } label: {
             Text(isEditing ? "confirm changes?" : "add to marketplace?")
@@ -259,11 +262,13 @@ struct AddTaskView: View {
     }
 
     private func close() {
+        Haptic.light()
         onCancel?()
         dismiss()
     }
 
     private func deleteTask() {
+        Haptic.light()
         guard let task else { return }
 
         context.delete(task)

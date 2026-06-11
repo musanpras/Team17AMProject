@@ -239,6 +239,7 @@ struct MarketView: View {
         HStack(spacing: 0) {
             ForEach(EnergyFilter.displayOrder, id: \.self) { filter in
                 Button {
+                    Haptic.medium()
                     selectedFilter = filter
                 } label: {
                     HStack(spacing: 12) {
@@ -313,9 +314,11 @@ struct MarketView: View {
                         )
                         .zIndex(pressedTask?.id == task.id ? 1 : 0)
                         .animation(.snappy(duration: 0.2), value: pressedTask?.id)
-                        
                         .onLongPressGesture(minimumDuration: 0.5,
                                             pressing: { pressing in
+                            if pressing {
+                                Haptic.medium()
+                            }
                             pressedTask = pressing ? task : nil
                         }
                         ) {
@@ -369,6 +372,7 @@ struct MarketView: View {
     
     private var addTaskButton: some View {
         Button {
+            Haptic.light()
             editingTask = nil
             showingAdd = true
         } label: {
@@ -399,7 +403,7 @@ struct MarketView: View {
                         
                         if !slot.isCommitted {
                             Button {
-                                
+                                Haptic.light()
                                 removeOneSelection(for: task)
                             } label: {
                                 Image(systemName: "minus")
@@ -412,12 +416,6 @@ struct MarketView: View {
                             .offset(x: -4, y: 4)
                         }
                     }
-                    .simultaneousGesture(
-                        LongPressGesture(minimumDuration: 1.0).onEnded { _ in
-                            editingTask = task
-                            showingAdd = true
-                        }
-                    )
                 }
                 
                 ForEach(0..<emptySelectedSlotCount, id: \.self) { _ in
@@ -443,6 +441,7 @@ struct MarketView: View {
     
     private func proceedText() -> some View {
         Button {
+            Haptic.light()
             proceedWithSelectedTasks()
             selectedTab = .home
             
