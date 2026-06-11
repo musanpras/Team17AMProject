@@ -403,7 +403,7 @@ struct MarketView: View {
                         
                         if !slot.isCommitted {
                             Button {
-                                
+                                Haptic.light()
                                 removeOneSelection(for: task)
                             } label: {
                                 Image(systemName: "minus")
@@ -416,12 +416,6 @@ struct MarketView: View {
                             .offset(x: -4, y: 4)
                         }
                     }
-                    .simultaneousGesture(
-                        LongPressGesture(minimumDuration: 1.0).onEnded { _ in
-                            editingTask = task
-                            showingAdd = true
-                        }
-                    )
                 }
                 
                 ForEach(0..<emptySelectedSlotCount, id: \.self) { _ in
