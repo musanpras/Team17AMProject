@@ -11,13 +11,8 @@ import SwiftData
 @Model
 final class Item {
     var timestamp: Date
-    
+
     init(timestamp: Date) {
         self.timestamp = timestamp
     }
-}
-
-enum Tab {
-    case home
-    case market
 }

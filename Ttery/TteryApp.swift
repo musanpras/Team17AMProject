@@ -34,15 +34,7 @@ struct TteryApp: App {
     }()
     
     init () {
-        let context = sharedModelContainer.mainContext
-        let descriptor = FetchDescriptor<TaskItem>()
-        let existing = (try? context.fetch(descriptor)) ?? []
-        
-        guard existing.isEmpty else { return }
-        for task in TaskItem.defaultTasks {
-            context.insert(task)
-        }
-        
+        TaskSeeder.seedDefaultTasksIfNeeded(in: sharedModelContainer.mainContext)
     }
     
     var body: some Scene {
