@@ -11,32 +11,10 @@ import SwiftUI
 @main
 struct TteryApp: App {
     @State private var isSplashActive = true
-    
-    var sharedModelContainer: ModelContainer = {
-        let schema = Schema([
-            Item.self,
-            DailyState.self,
-            TaskItem.self,
-        ])
-        let modelConfiguration = ModelConfiguration(
-            schema: schema,
-            isStoredInMemoryOnly: false
-        )
-        
-        do {
-            return try ModelContainer(
-                for: schema,
-                configurations: [modelConfiguration]
-            )
-        } catch {
-            fatalError("Could not create ModelContainer: \(error)")
-        }
-    }()
-    
-    init () {
-        TaskSeeder.seedDefaultTasksIfNeeded(in: sharedModelContainer.mainContext)
-    }
-    
+    @State private var didConfigureApp = false
+
+    private let sharedModelContainer = ModelContainerFactory.make()
+
     var body: some Scene {
         WindowGroup {
             ZStack {
@@ -47,17 +25,40 @@ struct TteryApp: App {
                 }
             }
             .onAppear {
+                configureAppIfNeeded()
+
                 TaskReminderNotificationManager.shared.requestAuthorization()
 
-                // Keep splash visible for 2.5 seconds, then transition out
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
                     withAnimation(.easeInOut(duration: 0.5)) {
-                        self.isSplashActive = false
+                        isSplashActive = false
                     }
                 }
             }
         }
         .modelContainer(sharedModelContainer)
     }
-}
 
+    private func configureAppIfNeeded() {
+        guard !didConfigureApp else { return }
+        didConfigureApp = true
+
+        let context = sharedModelContainer.mainContext
+        TaskSeeder.seedDefaultTasksIfNeeded(in: context)
+
+        let states = (try? context.fetch(FetchDescriptor<DailyState>())) ?? []
+        if let state = states.first,
+           state.remindersEnabled {
+
+            TaskReminderNotificationManager.shared.scheduleDailyReminders(
+                startMinute: state.reminderStartMinute,
+                endMinute: state.reminderEndMinute,
+                intervalMinutes: state.reminderIntervalMinutes,
+                activeTaskTitle: nil,
+                selectedTaskCount: 0
+            )
+            
+        }
+        _ = DailyStateService(modelContext: context).ensureExists(in: states)
+    }
+}

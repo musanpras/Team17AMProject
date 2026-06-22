@@ -6,6 +6,7 @@
 import Foundation
 import SwiftData
 
+@MainActor
 @Observable
 final class MarketViewModel {
     var showingAdd = false
@@ -22,17 +23,22 @@ final class MarketViewModel {
 
     init(
         modelContext: ModelContext,
-        notificationService: TaskReminderNotificationManager = .shared
+        notificationService: TaskReminderNotificationManager? = nil
     ) {
         self.dailyStateService = DailyStateService(modelContext: modelContext)
         self.taskRepository = TaskRepository(modelContext: modelContext)
-        self.notificationService = notificationService
+        self.notificationService = notificationService ?? .shared
     }
 
     func onAppear(states: [DailyState], tasks: [TaskItem]) {
         remainingEnergy = Int(states.first?.currentEnergy ?? 0)
         dailyStateService.ensureExists(in: states)
         taskRepository.syncPendingFromCommitted(tasks: tasks)
+        WidgetSyncService.update(
+            from: states.first,
+            activeTaskTitle: nil,
+            selectedTaskCount: pendingSelectedTasks(from: tasks).count
+        )
     }
 
     func energyValue(for dailyState: DailyState?) -> Double {
@@ -112,12 +118,21 @@ final class MarketViewModel {
         )
     }
 
-    func proceedWithSelectedTasks(tasks: [TaskItem]) {
+    func proceedWithSelectedTasks(tasks: [TaskItem], dailyState: DailyState?) {
         let pending = pendingSelectedTasks(from: tasks)
+        let selectedCount = min(pending.count, TaskSelection.maxSlots)
         taskRepository.commitPendingSelection(tasks: tasks, pending: pending)
-        notificationService.scheduleHourlyReminder(
+        notificationService.scheduleDailyReminders(
+            startMinute: dailyState?.reminderStartMinute ?? DailyState.defaultReminderStartMinute,
+            endMinute: dailyState?.reminderEndMinute ?? DailyState.defaultReminderEndMinute,
+            intervalMinutes: dailyState?.reminderIntervalMinutes ?? DailyState.defaultReminderIntervalMinutes,
             activeTaskTitle: nil,
-            selectedTaskCount: min(pending.count, TaskSelection.maxSlots)
+            selectedTaskCount: selectedCount
+        )
+        WidgetSyncService.update(
+            from: dailyState,
+            activeTaskTitle: nil,
+            selectedTaskCount: selectedCount
         )
     }
 }

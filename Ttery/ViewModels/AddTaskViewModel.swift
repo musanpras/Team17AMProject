@@ -6,6 +6,7 @@
 import Foundation
 import SwiftData
 
+@MainActor
 @Observable
 final class AddTaskViewModel {
     var title = ""

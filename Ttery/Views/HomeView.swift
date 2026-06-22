@@ -38,10 +38,13 @@ struct HomeView: View {
                 viewModel?.onAppear(states: states, tasks: tasks)
             }
             .onChange(of: viewModel?.activeTask?.title) { _, _ in
-                viewModel?.scheduleTaskReminder(tasks: tasks)
+                viewModel?.scheduleTaskReminder(tasks: tasks, dailyState: dailyState)
             }
             .onChange(of: selectedTaskCount) { _, _ in
-                viewModel?.scheduleTaskReminder(tasks: tasks)
+                viewModel?.scheduleTaskReminder(tasks: tasks, dailyState: dailyState)
+            }
+            .onChange(of: dailyState?.currentEnergy) { _, _ in
+                viewModel?.syncWidget(tasks: tasks, dailyState: dailyState)
             }
         }
     }
@@ -54,7 +57,7 @@ struct HomeView: View {
                     activeTaskTitle: viewModel.activeTask?.title,
                     hasActiveTask: viewModel.activeTask != nil,
                     onDelete: {
-                        viewModel.deleteActiveTask(tasks: tasks)
+                        viewModel.deleteActiveTask(tasks: tasks, dailyState: dailyState)
                     },
                     onComplete: {
                         viewModel.completeActiveTask(dailyState: dailyState, tasks: tasks)
@@ -100,7 +103,7 @@ struct HomeView: View {
             if viewModel.showNotif {
                 HomeWarningPopup(
                     onConfirm: {
-                        viewModel.confirmLowEnergyWarning()
+                        viewModel.confirmLowEnergyWarning(tasks: tasks, dailyState: dailyState)
                     },
                     onCancel: {
                         viewModel.dismissWarning()

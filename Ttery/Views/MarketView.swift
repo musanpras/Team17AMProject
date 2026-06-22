@@ -87,7 +87,7 @@ struct MarketView: View {
                     selectedCount: viewModel.pendingSelectedTasks(from: tasks).count,
                     maxSelectedTasks: TaskSelection.maxSlots,
                     onProceed: {
-                        viewModel.proceedWithSelectedTasks(tasks: tasks)
+                        viewModel.proceedWithSelectedTasks(tasks: tasks, dailyState: dailyState)
                         selectedTab = .home
                     }
                 )

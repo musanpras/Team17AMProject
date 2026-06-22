@@ -6,6 +6,7 @@
 import Foundation
 import SwiftData
 
+@MainActor
 @Observable
 final class HomeViewModel {
     var activeTask: TaskItem?
@@ -18,16 +19,16 @@ final class HomeViewModel {
 
     init(
         modelContext: ModelContext,
-        notificationService: TaskReminderNotificationManager = .shared
+        notificationService: TaskReminderNotificationManager? = nil
     ) {
         self.dailyStateService = DailyStateService(modelContext: modelContext)
         self.taskRepository = TaskRepository(modelContext: modelContext)
-        self.notificationService = notificationService
+        self.notificationService = notificationService ?? .shared
     }
 
     func onAppear(states: [DailyState], tasks: [TaskItem]) {
         dailyStateService.ensureExists(in: states)
-        scheduleTaskReminder(tasks: tasks)
+        scheduleTaskReminder(tasks: tasks, dailyState: states.first)
     }
 
     func energyValue(for dailyState: DailyState?) -> Double {
@@ -59,22 +60,23 @@ final class HomeViewModel {
         }
     }
 
-    func confirmLowEnergyWarning() {
+    func confirmLowEnergyWarning(tasks: [TaskItem], dailyState: DailyState?) {
         activeTask = tempTask
         tempTask = nil
         showNotif = false
+        syncWidget(tasks: tasks, dailyState: dailyState)
     }
 
     func dismissWarning() {
         showNotif = false
     }
 
-    func deleteActiveTask(tasks: [TaskItem]) {
+    func deleteActiveTask(tasks: [TaskItem], dailyState: DailyState?) {
         Haptic.medium()
         guard let task = activeTask else { return }
         taskRepository.removeActiveSelection(task)
         activeTask = nil
-        scheduleTaskReminder(tasks: tasks)
+        scheduleTaskReminder(tasks: tasks, dailyState: dailyState)
     }
 
     func completeActiveTask(dailyState: DailyState?, tasks: [TaskItem]) {
@@ -82,11 +84,24 @@ final class HomeViewModel {
         guard let task = activeTask, let dailyState else { return }
         taskRepository.complete(task, dailyState: dailyState)
         activeTask = nil
-        scheduleTaskReminder(tasks: tasks)
+        scheduleTaskReminder(tasks: tasks, dailyState: dailyState)
     }
 
-    func scheduleTaskReminder(tasks: [TaskItem]) {
-        notificationService.scheduleHourlyReminder(
+    func scheduleTaskReminder(tasks: [TaskItem], dailyState: DailyState?) {
+        let selectedCount = selectedTasks(from: tasks).count
+        notificationService.scheduleDailyReminders(
+            startMinute: dailyState?.reminderStartMinute ?? DailyState.defaultReminderStartMinute,
+            endMinute: dailyState?.reminderEndMinute ?? DailyState.defaultReminderEndMinute,
+            intervalMinutes: dailyState?.reminderIntervalMinutes ?? DailyState.defaultReminderIntervalMinutes,
+            activeTaskTitle: activeTask?.title,
+            selectedTaskCount: selectedCount
+        )
+        syncWidget(tasks: tasks, dailyState: dailyState)
+    }
+
+    func syncWidget(tasks: [TaskItem], dailyState: DailyState?) {
+        WidgetSyncService.update(
+            from: dailyState,
             activeTaskTitle: activeTask?.title,
             selectedTaskCount: selectedTasks(from: tasks).count
         )

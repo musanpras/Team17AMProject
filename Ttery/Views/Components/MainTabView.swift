@@ -8,35 +8,29 @@
 import SwiftUI
 
 struct MainTabView: View {
-    
+
     @State private var selectedTab: Tab = .home
 
-        var body: some View {
+    var body: some View {
+        NavigationStack {
+            ZStack(alignment: .bottom) {
+                TabView(selection: $selectedTab) {
+                    HomeView()
+                        .tag(Tab.home)
 
-            NavigationStack {
-                ZStack(alignment: .bottom) {
-                    
-                    // Main content
-                    TabView(selection: $selectedTab) {
-                        
-                        HomeView()
-                            .tag(Tab.home)
-                        
-                        MarketView(selectedTab: $selectedTab)
-                            .tag(Tab.market)
-                    }
-                    
-                    // Custom tab view
-                    
-                    CustomTabView(selectedTab: $selectedTab)
-                    
+                    MarketView(selectedTab: $selectedTab)
+                        .tag(Tab.market)
+
+                    SettingsView()
+                        .tag(Tab.settings)
                 }
-                .ignoresSafeArea(.keyboard, edges: .bottom)
+
+                CustomTabView(selectedTab: $selectedTab)
             }
+            .ignoresSafeArea(.keyboard, edges: .bottom)
         }
+    }
 }
-
-
 
 #Preview {
     MainTabView()

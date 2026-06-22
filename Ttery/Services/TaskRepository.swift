@@ -3,17 +3,26 @@
 //  Team17Project
 //
 
+import Foundation
 import SwiftData
 
 struct TaskRepository {
     let modelContext: ModelContext
 
-    func save() {
-        try? modelContext.save()
+    @discardableResult
+    func save() -> Bool {
+        do {
+            try modelContext.save()
+            return true
+        } catch {
+            assertionFailure("Failed to save TaskItem changes: \(error)")
+            return false
+        }
     }
 
     func complete(_ task: TaskItem, dailyState: DailyState) {
         EnergyCalculator.applyCompletion(task: task, to: dailyState)
+        dailyState.lastUpdated = .now
         decrementSelection(for: task)
         save()
     }
