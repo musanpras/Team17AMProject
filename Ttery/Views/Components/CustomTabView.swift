@@ -10,49 +10,36 @@ import SwiftUI
 struct CustomTabView: View {
 
     @Binding var selectedTab: Tab
-    
+
+    private let tabWidth: CGFloat = 88
 
     var body: some View {
-
         ZStack(alignment: .bottom) {
-
-            // Bottom dark shadow layer
             RoundedRectangle(cornerRadius: 40)
                 .fill(Color.black.opacity(0.8))
                 .frame(height: 68)
 
-            // Main tab bar
             ZStack {
-
                 RoundedRectangle(cornerRadius: 40)
                     .fill(Color.white)
                     .frame(height: 68)
 
-                // Selected tab background
                 HStack {
-                    if selectedTab == .market {
-                        Spacer()
-                    }
-
                     RoundedRectangle(cornerRadius: 35)
                         .fill(Color.gray.opacity(0.12))
-                        .frame(width: 90, height: 60)
-
-                    if selectedTab == .home {
-                        Spacer()
-                    }
+                        .frame(width: tabWidth, height: 60)
+                        .offset(x: selectionOffset)
                 }
                 .padding(.horizontal, 6)
 
-                // Tabs
                 HStack {
-
                     tabButton(
                         image: "activettery",
                         unactiveimage: "unactivettery",
                         title: "ttery",
                         tab: .home
                     )
+//                    .padding(.leading, 8)
 
                     tabButton(
                         image: "storefront",
@@ -60,10 +47,22 @@ struct CustomTabView: View {
                         title: "market",
                         tab: .market
                     )
+
+                    tabButton(
+                        image: "gearshape.fill",
+                        unactiveimage: "",
+                        title: "settings",
+                        tab: .settings
+                    )
                 }
             }
         }
-        .frame(width: 200, height: 50)
+        .frame(width: tabWidth * 3 + 12, height: 50)
+    }
+
+    private var selectionOffset: CGFloat {
+        let index = CGFloat(selectedTab.index)
+        return (index - 1) * tabWidth
     }
 
     private func tabButton(
@@ -72,7 +71,6 @@ struct CustomTabView: View {
         title: String,
         tab: Tab
     ) -> some View {
-
         Button {
             Haptic.medium()
             withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
@@ -80,24 +78,19 @@ struct CustomTabView: View {
             }
         } label: {
             VStack(spacing: 6) {
-
-                if unactiveimage != "" {
-                    if selectedTab == .home {
-                        Image(image)
-                            .resizable()
-                            .frame(width: 20, height: 20)
-                    } else {
-                        Image(unactiveimage)
-                            .resizable()
-                            .frame(width: 20, height: 20)
-                    }
+                if tab == .home {
+                    Image(selectedTab == .home ? image : unactiveimage)
+                        .resizable()
+                        .frame(width: 20, height: 20)
                 } else {
                     Image(systemName: image)
-                        .font(.system(size: 20))
+                        .font(.system(size: tab == .settings ? 18 : 20))
                 }
 
                 Text(title)
-                    .font(.system(size: 12, weight: .medium))
+                    .font(.system(size: 11, weight: .medium))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
             }
             .foregroundColor(
                 selectedTab == tab
@@ -107,6 +100,8 @@ struct CustomTabView: View {
             .frame(maxWidth: .infinity)
             .frame(height: 80)
         }
+        .padding(.leading, tab == .home ? 8 : 0)
+        .padding(.trailing, tab == .settings ? 8 : 0)
     }
 }
 
