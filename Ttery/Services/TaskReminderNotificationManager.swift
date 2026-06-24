@@ -25,7 +25,26 @@ final class TaskReminderNotificationManager: NSObject, UNUserNotificationCenterD
         notificationCenter.requestAuthorization(options: [.alert, .sound, .badge]) { _, _ in }
     }
 
-    func scheduleDailyReminders(
+    func scheduleReminders(
+        for state: DailyState?,
+        activeTaskTitle: String?,
+        selectedTaskCount: Int
+    ) {
+        guard state?.remindersEnabled ?? true else {
+            removeAllReminders()
+            return
+        }
+
+        scheduleDailyReminders(
+            startMinute: state?.reminderStartMinute ?? DailyState.defaultReminderStartMinute,
+            endMinute: state?.reminderEndMinute ?? DailyState.defaultReminderEndMinute,
+            intervalMinutes: state?.reminderIntervalMinutes ?? DailyState.defaultReminderIntervalMinutes,
+            activeTaskTitle: activeTaskTitle,
+            selectedTaskCount: selectedTaskCount
+        )
+    }
+
+    private func scheduleDailyReminders(
         startMinute: Int,
         endMinute: Int,
         intervalMinutes: Int,

@@ -11,34 +11,29 @@ import SwiftData
 struct AddTaskView: View {
 
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.modelContext) private var modelContext
-    @State private var viewModel: AddTaskViewModel?
+    @State private var viewModel: AddTaskViewModel
 
-    let task: TaskItem?
     var onSave: (() -> Void)?
     var onCancel: (() -> Void)?
 
     init(
+        modelContext: ModelContext,
         task: TaskItem? = nil,
         onSave: (() -> Void)? = nil,
         onCancel: (() -> Void)? = nil
     ) {
-        self.task = task
+        _viewModel = State(
+            initialValue: AddTaskViewModel(
+                modelContext: modelContext,
+                editingTask: task
+            )
+        )
         self.onSave = onSave
         self.onCancel = onCancel
     }
 
     var body: some View {
-        Group {
-            if let viewModel {
-                addTaskContent(viewModel: viewModel)
-            }
-        }
-        .onAppear {
-            if viewModel == nil {
-                viewModel = AddTaskViewModel(modelContext: modelContext, editingTask: task)
-            }
-        }
+        addTaskContent(viewModel: viewModel)
     }
 
     @ViewBuilder
@@ -222,5 +217,10 @@ struct AddTaskView: View {
 }
 
 #Preview {
-    AddTaskView()
+    AddTaskView(
+        modelContext: try! ModelContainer(
+            for: TaskItem.self,
+            configurations: ModelConfiguration(isStoredInMemoryOnly: true)
+        ).mainContext
+    )
 }

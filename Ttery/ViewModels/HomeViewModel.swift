@@ -89,10 +89,8 @@ final class HomeViewModel {
 
     func scheduleTaskReminder(tasks: [TaskItem], dailyState: DailyState?) {
         let selectedCount = selectedTasks(from: tasks).count
-        notificationService.scheduleDailyReminders(
-            startMinute: dailyState?.reminderStartMinute ?? DailyState.defaultReminderStartMinute,
-            endMinute: dailyState?.reminderEndMinute ?? DailyState.defaultReminderEndMinute,
-            intervalMinutes: dailyState?.reminderIntervalMinutes ?? DailyState.defaultReminderIntervalMinutes,
+        notificationService.scheduleReminders(
+            for: dailyState,
             activeTaskTitle: activeTask?.title,
             selectedTaskCount: selectedCount
         )

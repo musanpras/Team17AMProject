@@ -95,17 +95,11 @@ final class SettingsViewModel {
     func updateReminder(for state: DailyState) -> Bool {
         guard state.reminderStartMinute < state.reminderEndMinute else { return false }
 
-        if state.remindersEnabled {
-            notificationService.scheduleDailyReminders(
-                startMinute: state.reminderStartMinute,
-                endMinute: state.reminderEndMinute,
-                intervalMinutes: state.reminderIntervalMinutes,
-                activeTaskTitle: nil,
-                selectedTaskCount: 0
-            )
-        } else {
-            notificationService.removeAllReminders()
-        }
+        notificationService.scheduleReminders(
+            for: state,
+            activeTaskTitle: nil,
+            selectedTaskCount: 0
+        )
 
         return true
     }

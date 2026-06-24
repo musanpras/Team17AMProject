@@ -122,10 +122,8 @@ final class MarketViewModel {
         let pending = pendingSelectedTasks(from: tasks)
         let selectedCount = min(pending.count, TaskSelection.maxSlots)
         taskRepository.commitPendingSelection(tasks: tasks, pending: pending)
-        notificationService.scheduleDailyReminders(
-            startMinute: dailyState?.reminderStartMinute ?? DailyState.defaultReminderStartMinute,
-            endMinute: dailyState?.reminderEndMinute ?? DailyState.defaultReminderEndMinute,
-            intervalMinutes: dailyState?.reminderIntervalMinutes ?? DailyState.defaultReminderIntervalMinutes,
+        notificationService.scheduleReminders(
+            for: dailyState,
             activeTaskTitle: nil,
             selectedTaskCount: selectedCount
         )

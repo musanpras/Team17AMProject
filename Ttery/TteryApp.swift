@@ -47,18 +47,11 @@ struct TteryApp: App {
         TaskSeeder.seedDefaultTasksIfNeeded(in: context)
 
         let states = (try? context.fetch(FetchDescriptor<DailyState>())) ?? []
-        if let state = states.first,
-           state.remindersEnabled {
-
-            TaskReminderNotificationManager.shared.scheduleDailyReminders(
-                startMinute: state.reminderStartMinute,
-                endMinute: state.reminderEndMinute,
-                intervalMinutes: state.reminderIntervalMinutes,
-                activeTaskTitle: nil,
-                selectedTaskCount: 0
-            )
-            
-        }
-        _ = DailyStateService(modelContext: context).ensureExists(in: states)
+        let state = DailyStateService(modelContext: context).ensureExists(in: states)
+        TaskReminderNotificationManager.shared.scheduleReminders(
+            for: state,
+            activeTaskTitle: nil,
+            selectedTaskCount: 0
+        )
     }
 }
