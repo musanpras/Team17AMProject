@@ -11,15 +11,18 @@ import SwiftData
 final class SettingsViewModel {
     private let dailyStateService: DailyStateService
     private let notificationService: TaskReminderNotificationManager
+    private let settingsPreferences: SettingsPreferences
     private let calendar: Calendar
 
     init(
         modelContext: ModelContext,
         notificationService: TaskReminderNotificationManager? = nil,
+        settingsPreferences: SettingsPreferences = SettingsPreferences(),
         calendar: Calendar = .current
     ) {
         self.dailyStateService = DailyStateService(modelContext: modelContext)
         self.notificationService = notificationService ?? .shared
+        self.settingsPreferences = settingsPreferences
         self.calendar = calendar
     }
 
@@ -28,7 +31,7 @@ final class SettingsViewModel {
     }
 
     func resetsEnergyDaily(for state: DailyState?) -> Bool {
-        state?.resetsEnergyDaily ?? true
+        settingsPreferences.resetsEnergyDaily(fallback: state?.resetsEnergyDaily ?? true)
     }
 
     func setResetsEnergyDaily(_ enabled: Bool, state: DailyState?, tasks: [TaskItem]) {
@@ -42,11 +45,12 @@ final class SettingsViewModel {
     }
 
     func remindersEnabled(for state: DailyState?) -> Bool {
-        state?.remindersEnabled ?? true
+        settingsPreferences.remindersEnabled(fallback: state?.remindersEnabled ?? true)
     }
 
     func setRemindersEnabled(_ enabled: Bool, state: DailyState?) -> Bool {
         guard let state else { return true }
+        settingsPreferences.setRemindersEnabled(enabled)
         state.remindersEnabled = enabled
         dailyStateService.save()
         return updateReminder(for: state)

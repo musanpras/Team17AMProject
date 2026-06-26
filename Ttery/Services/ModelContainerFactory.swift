@@ -13,20 +13,15 @@ enum ModelContainerFactory {
             TaskItem.self,
         ])
 
-        let configurations = [
-            ModelConfiguration(schema: schema, isStoredInMemoryOnly: false),
-            ModelConfiguration(schema: schema, isStoredInMemoryOnly: true),
-        ]
-
-        for configuration in configurations {
-            if let container = try? ModelContainer(
+        do {
+            return try ModelContainer(
                 for: schema,
-                configurations: [configuration]
-            ) {
-                return container
-            }
+                configurations: [
+                    ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+                ]
+            )
+        } catch {
+            preconditionFailure("Unable to create a persistent SwiftData ModelContainer: \(error)")
         }
-
-        preconditionFailure("Unable to create a SwiftData ModelContainer.")
     }
 }

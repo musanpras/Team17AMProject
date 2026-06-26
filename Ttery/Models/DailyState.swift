@@ -17,16 +17,16 @@ class DailyState {
     static let defaultReminderEndMinute = 1320
     static let defaultReminderHours = 1
 
-    var currentEnergy: Int
-    var maxEnergy: Int
-    var lastUpdated: Date
-    var resetsEnergyDaily: Bool
+    var currentEnergy: Int = DailyState.defaultCurrentEnergy
+    var maxEnergy: Int = DailyState.defaultMaxEnergy
+    var lastUpdated: Date = Date()
+    var resetsEnergyDaily: Bool = true
     
-    var remindersEnabled: Bool
-    var reminderIntervalMinutes: Int
-    var reminderStartMinute: Int
-    var reminderEndMinute: Int
-    var reminderHours: Int
+    var remindersEnabled: Bool = true
+    var reminderIntervalMinutes: Int = DailyState.defaultReminderIntervalMinutes
+    var reminderStartMinute: Int = DailyState.defaultReminderStartMinute
+    var reminderEndMinute: Int = DailyState.defaultReminderEndMinute
+    var reminderHours: Int = DailyState.defaultReminderHours
     
     init(
         currentEnergy: Int = DailyState.defaultCurrentEnergy,

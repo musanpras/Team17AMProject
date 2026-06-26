@@ -8,15 +8,19 @@ import SwiftData
 
 struct DailyStateService {
     let modelContext: ModelContext
+    private let settingsPreferences = SettingsPreferences()
 
     @discardableResult
     func ensureExists(in states: [DailyState]) -> DailyState? {
         if let state = states.first {
+            settingsPreferences.sync(state)
             refreshForNewDayIfNeeded(state)
+            save()
             return state
         }
 
         let state = DailyState()
+        settingsPreferences.sync(state)
         modelContext.insert(state)
         save()
         return state
@@ -34,6 +38,7 @@ struct DailyStateService {
     }
 
     func setResetsEnergyDaily(_ enabled: Bool, for state: DailyState) {
+        settingsPreferences.setResetsEnergyDaily(enabled)
         state.resetsEnergyDaily = enabled
         if enabled {
             refreshForNewDayIfNeeded(state)
